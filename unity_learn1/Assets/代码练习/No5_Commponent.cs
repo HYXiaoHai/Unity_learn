@@ -31,7 +31,7 @@ public class No5_Commponent : MonoBehaviour
 
         Debug.Log(enemyGos.GetComponentInParent<BoxCollider2D>());//父对象单个
 
-        //b.通过组件查找
+        //b.通过其他组件查找
         SpriteRenderer sprite = grisGo.GetComponent<SpriteRenderer>();
         sprite.GetComponent<Transform>();
 
