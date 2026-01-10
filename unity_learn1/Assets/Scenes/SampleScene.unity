@@ -230,12 +230,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 103156480}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 13.51}
-  m_LocalScale: {x: 0.59341, y: 0.59341, z: 0.59341}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.96, y: 0, z: 13.51}
+  m_LocalScale: {x: 0.23674686, y: 0.23674686, z: 0.23674686}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1871150015}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &120994920
 GameObject:
@@ -1092,6 +1092,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1098230081}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1337273774
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1337273775}
+  m_Layer: 0
+  m_Name: "\u76EE\u6807\u4F4D\u7F6E"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1337273775
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337273774}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.61, y: 0.13, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1871150015}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1627111988
 GameObject:
   m_ObjectHideFlags: 0
@@ -1266,7 +1297,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 103156482}
+  - {fileID: 1337273775}
   m_Father: {fileID: 1077986486}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1871150016
@@ -1281,8 +1314,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d338dd60bfb0eb74caf03aea8b6be700, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  test: {fileID: 103156480}
   moveSpeed: 5
+  gripsTrans: {fileID: 103156482}
+  targetransform: {fileID: 1337273775}
 --- !u!1 &2095753924
 GameObject:
   m_ObjectHideFlags: 0
@@ -1413,5 +1447,4 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 1077986486}
   - {fileID: 1687611377}
-  - {fileID: 103156482}
   - {fileID: 1098230081}
