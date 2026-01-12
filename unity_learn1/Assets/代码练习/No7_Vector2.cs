@@ -84,8 +84,15 @@ public class No7_Vector2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        percent += 1 * larpspeed;
-        gripsTrans.position = Vector2.Lerp(gripsTrans.position, targetransform.position, percent);
+        //gripsTrans.position = Vector2.Lerp(gripsTrans.position, targetransform.position, 0.01f);//阻尼运动 慢快慢
+        //匀速运动
+        percent += 1 * larpspeed*Time.deltaTime;
+        //gripsTrans.position = Vector2.Lerp(gripsTrans.position, targetransform.position, percent);
+
+        gripsTrans.position = Vector2.MoveTowards(gripsTrans.position, targetransform.position, 0.01f);//最大移动的步频 匀速
+
+        Vector2 currenVelocity = new Vector2(0f,0.01f);//初始移动方向
+        gripsTrans.position = Vector2.SmoothDamp(gripsTrans.position, targetransform.position,ref currenVelocity, 0.5f);//平滑阻尼
 
     }
 }
