@@ -15,6 +15,10 @@ public class No9_Message : MonoBehaviour
         gameObject.SendMessage("GetMsg");
         SendMessage("GetSrcMsg", "66666");
         SendMessage("不存在函数", SendMessageOptions.DontRequireReceiver);
+        //广播消息（向下发，所有子对象和自己）
+        BroadcastMessage("GetMsg");
+        //向上发送消息(所有父对象和自己)
+        SendMessageUpwards("GetMsg");
     }
 
     // Update is called once per frame
