@@ -8,6 +8,7 @@ public class No6_Transform : MonoBehaviour
 {
     public GameObject grisGo;
     public Transform m_Transform;
+    public float movespeed;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,10 +29,10 @@ public class No6_Transform : MonoBehaviour
         Debug.Log("Grips相对于父对象的欧拉角表示的旋转是：" + grisTRans.localEulerAngles);
         Debug.Log("Grips相对于父对象的变换缩放是：" + grisTRans.localScale);
 
-        Debug.Log("Grips的正方向是（蓝色z轴）：" + grisTRans.forward);//local的正方向
+        Debug.Log("Grips的自身坐标正方向是（蓝色z轴）：" + grisTRans.forward);//local的正方向
         //Vector3.forward; 世界坐标的正方向。
-        Debug.Log("Grips的正右方（x）：" + grisTRans.right);//local的正右方（x）
-        Debug.Log("Grips的正上方是（y）：" + grisTRans.up);//local的正上方（y）
+        Debug.Log("Grips的自身坐标正右方（x）：" + grisTRans.right);//local的正右方（x）
+        Debug.Log("Grips的自身坐标正上方是（y）：" + grisTRans.up);//local的正上方（y）
         //共有方法
         //3.查找
         Debug.Log("当前脚本挂载对象的叫Gris的子物体"+transform.Find("Gris"));
@@ -46,6 +47,21 @@ public class No6_Transform : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //0.移动（按照世界坐标系移动,不填）实际情况按照自身坐标移动
+        grisGo.transform.Translate(Vector2.left);
 
+        grisGo.transform.Translate(-grisGo.transform.right);
+        //1.移动（按照世界坐标系移动，指定世界坐标系）实际情况按照世界坐标移动
+        grisGo.transform.Translate(Vector2.left*movespeed,Space.World);
+        //2.移动（按照世界坐标系移动，指定自身坐标系）实际情况自身坐标移动
+        grisGo.transform.Translate(Vector2.left*movespeed,Space.Self);
+        //3.移动（按照自身坐标系移动，指定世界坐标系）实际情况按照自身坐标移动
+        grisGo.transform.Translate(-grisGo.transform.right*movespeed,Space.World);
+        //4.移动（按照自身坐标系移动，指定自身坐标系）实际情况世界坐标移动（一般不使用）
+        grisGo.transform.Translate(-grisGo.transform.right * movespeed,Space.Self);
+  
+        //旋转
+        grisGo.transform.Rotate(new Vector3(0,0,1));//2d场景一般旋转z轴 
+        grisGo.transform.Rotate(Vector3.forward,1*Time.deltaTime); 
     }
 }
