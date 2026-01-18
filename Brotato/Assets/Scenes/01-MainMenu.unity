@@ -611,8 +611,9 @@ GameObject:
   - component: {fileID: 389668709}
   - component: {fileID: 389668708}
   - component: {fileID: 389668710}
+  - component: {fileID: 389668711}
   m_Layer: 5
-  m_Name: Button
+  m_Name: MainMenuPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -705,6 +706,22 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &389668711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389668706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 096c2514c42b5264ba83e78202680974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startButton: {fileID: 913434937}
+  settingButton: {fileID: 670291714}
+  progressButton: {fileID: 479171818}
+  exitButton: {fileID: 1663293019}
 --- !u!1 &446247427
 GameObject:
   m_ObjectHideFlags: 0
@@ -803,7 +820,7 @@ GameObject:
   - component: {fileID: 479171818}
   - component: {fileID: 479171817}
   m_Layer: 5
-  m_Name: ProgressButton (2)
+  m_Name: ProgressButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -905,8 +922,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 5476475904925173152, guid: a63a703ac02c5ff4f9e4281bb24651dd, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1313,7 +1330,7 @@ GameObject:
   - component: {fileID: 670291714}
   - component: {fileID: 670291713}
   m_Layer: 5
-  m_Name: SettingButton (1)
+  m_Name: SettingButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1415,8 +1432,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 5476475904925173152, guid: a63a703ac02c5ff4f9e4281bb24651dd, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1549,8 +1566,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 5476475904925173152, guid: a63a703ac02c5ff4f9e4281bb24651dd, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2118,7 +2135,7 @@ GameObject:
   - component: {fileID: 1663293019}
   - component: {fileID: 1663293018}
   m_Layer: 5
-  m_Name: ExitButton (3)
+  m_Name: ExitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2220,8 +2237,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 5476475904925173152, guid: a63a703ac02c5ff4f9e4281bb24651dd, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
