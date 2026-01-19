@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class WeaponSelectPanel : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static WeaponSelectPanel Instance;
+    public Transform _weaponContent;
+    public CanvasGroup _canvasGroup;
+    private void Awake()
     {
-        
+        Instance = this;
+
+        _canvasGroup = GetComponent<CanvasGroup>();
+        _weaponContent = GameObject.Find("WeaponContent").transform;
     }
 
     // Update is called once per frame
