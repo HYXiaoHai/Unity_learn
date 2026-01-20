@@ -37,7 +37,6 @@ public class RoleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             ButtonClick(roleData);
         }
         );
-
     }
 
     public void ButtonClick(RoleData r)

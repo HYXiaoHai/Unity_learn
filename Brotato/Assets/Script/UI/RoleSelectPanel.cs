@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public class RoleSelectPanel : MonoBehaviour
 {
     public static RoleSelectPanel Instance;
-
+    public CanvasGroup _canvasGroup;
+    
     public List<RoleData> roleDatas = new List<RoleData>();//角色数据信息
     private TextAsset roleTextAsset;//文件读取json文件
 
@@ -20,7 +21,6 @@ public class RoleSelectPanel : MonoBehaviour
     public TextMeshProUGUI _roleDescribe;//角色描述
     public TextMeshProUGUI _text3;//通关记录
 
-    public CanvasGroup _canvasGroup;
     public GameObject _roleDetails;
 
     private void Awake()
@@ -29,6 +29,7 @@ public class RoleSelectPanel : MonoBehaviour
 
         _roleList = GameObject.Find("RoleList").transform;
         _role_prefab = Resources.Load<GameObject>("Prefabs/Role");
+
         //读取json文件，并转化为对象。
         roleTextAsset = Resources.Load<TextAsset>("Data/role");
         roleDatas = JsonConvert.DeserializeObject<List<RoleData>>(roleTextAsset.text);
@@ -47,12 +48,6 @@ public class RoleSelectPanel : MonoBehaviour
         {
             RoleUI r = Instantiate(_role_prefab,_roleList).GetComponent<RoleUI>();
             r.SetData(roledata);
-
         }
-    }
-
-    void Update()
-    {
-        
     }
 }
