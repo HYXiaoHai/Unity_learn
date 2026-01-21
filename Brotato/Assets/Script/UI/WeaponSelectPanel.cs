@@ -10,8 +10,9 @@ public class WeaponSelectPanel : MonoBehaviour
     public static WeaponSelectPanel Instance;
     public Transform _weaponContent;
     public CanvasGroup _canvasGroup;
+    public CanvasGroup _WeaponDetallscanvasGroup;
 
-
+    
     public List<WeaponData> weaponDatas = new List<WeaponData>();//角色数据信息
     private TextAsset weaponTextAsset;//文件读取json文件
 
@@ -32,6 +33,7 @@ public class WeaponSelectPanel : MonoBehaviour
 
         _canvasGroup = GetComponent<CanvasGroup>();
         _weaponContent = GameObject.Find("WeaponContent").transform;
+        _WeaponDetallscanvasGroup = GameObject.Find("WeaponDetalls").GetComponent<CanvasGroup>();
 
         //读取json文件，并转化为对象。
         weaponTextAsset = Resources.Load<TextAsset>("Data/weapon");
@@ -47,6 +49,8 @@ public class WeaponSelectPanel : MonoBehaviour
         _weaponDescribe = GameObject.Find("WeaponDescribe").GetComponent <TextMeshProUGUI>();
 
         _weaponDetails = GameObject.Find("WeaponDetalls");
+
+            
     }
     private void Start()
     {

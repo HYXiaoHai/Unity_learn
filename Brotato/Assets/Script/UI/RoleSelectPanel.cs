@@ -8,6 +8,7 @@ public class RoleSelectPanel : MonoBehaviour
 {
     public static RoleSelectPanel Instance;
     public CanvasGroup _canvasGroup;
+    public CanvasGroup _contentCanvasGroup;
     
     public List<RoleData> roleDatas = new List<RoleData>();//角色数据信息
     private TextAsset roleTextAsset;//文件读取json文件
@@ -29,6 +30,7 @@ public class RoleSelectPanel : MonoBehaviour
 
         _roleList = GameObject.Find("RoleList").transform;
         _role_prefab = Resources.Load<GameObject>("Prefabs/Role");
+        _contentCanvasGroup = GameObject.Find("RoleContent").GetComponent<CanvasGroup>();
 
         //读取json文件，并转化为对象。
         roleTextAsset = Resources.Load<TextAsset>("Data/role");

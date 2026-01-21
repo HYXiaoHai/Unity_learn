@@ -10,9 +10,9 @@ public class RoleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public RoleData _roleData;
 
-    public Image _backImage;//±³¾°
-    public Image _avatar;//Í·Ïñ
-    public Button _button;//°´Å¥
+    public Image _backImage;//ï¿½ï¿½ï¿½ï¿½
+    public Image _avatar;//Í·ï¿½ï¿½
+    public Button _button;//ï¿½ï¿½Å¥
 
 
     private void Awake()
@@ -23,10 +23,11 @@ public class RoleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
     public void SetData(RoleData roleData)
     {
+        
         _roleData = roleData;
         if (_roleData.unlock == 0)
         {
-            _avatar.sprite = Resources.Load<Sprite>("Image/UI/Ëø");
+            _avatar.sprite = Resources.Load<Sprite>("Image/UI/é”");
         }
         else
         {
@@ -41,42 +42,46 @@ public class RoleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void ButtonClick(RoleData r)
     {
-        //¼ÇÂ¼½ÇÉ«ĞÅÏ¢
+        //ï¿½ï¿½Â¼ï¿½ï¿½É«ï¿½ï¿½Ï¢
         GameManage.Instance.currentRole = r;
 
-        //¹Ø±Õ½ÇÉ«Ñ¡ÔñÃæ°å
+        //ï¿½Ø±Õ½ï¿½É«Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½
         RoleSelectPanel.Instance._canvasGroup.alpha = 0;
         RoleSelectPanel.Instance._canvasGroup.interactable = false;
         RoleSelectPanel.Instance._canvasGroup.blocksRaycasts = false;
 
-        //¿ËÂ¡½ÇÉ«ui
+        //ï¿½ï¿½Â¡ï¿½ï¿½É«ui
         GameObject go = Instantiate(RoleSelectPanel.Instance._roleDetails, WeaponSelectPanel.Instance._weaponContent);
-        go.transform.SetSiblingIndex(0);//ÉèÖÃÎ»ÖÃ£¬ÔÚ×ÓÎïÌåÖĞÅÅµÚÒ»Î»¡£
+        go.transform.SetSiblingIndex(0);//ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½Ò»Î»ï¿½ï¿½
 
-        //´ò¿ªÎäÆ÷Ñ¡ÔñÄ£°å
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ä£ï¿½ï¿½
         WeaponSelectPanel.Instance._canvasGroup.alpha = 1;
         WeaponSelectPanel.Instance._canvasGroup.interactable = true;
         WeaponSelectPanel.Instance._canvasGroup.blocksRaycasts = true;
         WeaponSelectPanel.Instance._canvasGroup.blocksRaycasts = true;
     }
 
-    //Êó±êÒÆÈë
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public void OnPointerEnter(PointerEventData eventData)
     {
         _backImage.color = new Color(207 / 255f, 207 / 255f, 207 / 255f);
+
+        if(RoleSelectPanel.Instance._contentCanvasGroup.alpha != 1)
+        RoleSelectPanel.Instance._contentCanvasGroup.alpha = 1;//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+
         RenewUI(_roleData);
     }
     public void RenewUI(RoleData r)
     {
-        //Î´½âËø
+        //æœªè§£é”
         if (r.unlock == 0)
         {
             RoleSelectPanel.Instance._roleName.text = "???";
-            RoleSelectPanel.Instance._avatar.sprite = Resources.Load<Sprite>("Image/UI/Ëø");
+            RoleSelectPanel.Instance._avatar.sprite = Resources.Load<Sprite>("Image/UI/é”");
             RoleSelectPanel.Instance._roleDescribe.text = r.unlockConditions;
-            RoleSelectPanel.Instance._text3.text = "ÉĞÎŞ¼ÇÂ¼";
+            RoleSelectPanel.Instance._text3.text = "å°šæ— è®°å½•";
         }
-        else//ÒÑ½âËø
+        else//ï¿½Ñ½ï¿½ï¿½ï¿½
         {
             RoleSelectPanel.Instance._roleName.text = r.name;
             RoleSelectPanel.Instance._avatar.sprite = Resources.Load<Sprite>(r.avatar);
@@ -84,31 +89,31 @@ public class RoleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             RoleSelectPanel.Instance._text3.text = GetRecord(r.record);
         }
     }
-    //»ñÈ¡Í¨¹Ø¼ÇÂ¼
+    //ï¿½ï¿½È¡Í¨ï¿½Ø¼ï¿½Â¼
     string GetRecord(int record)
     {
         string result = "";
         switch (record)
         {
             case -1:
-                result = "ÉĞÎŞ¼ÇÂ¼"; break;
+                result = "å°šæ— è®°å½•"; break;
             case 0:
-                result = "Í¨¹ØÎ£ÏÕ0"; break;
+                result = "é€šå…³å±é™©0"; break;
             case 1:
-                result = "Í¨¹ØÎ£ÏÕ1"; break;
+                result = "é€šå…³å±é™©1"; break;
             case 2:
-                result = "Í¨¹ØÎ£ÏÕ2"; break;
+                result = "é€šå…³å±é™©2"; break;
             case 3:
-                result = "Í¨¹ØÎ£ÏÕ3"; break;
+                result = "é€šå…³å±é™©3"; break;
             case 4:
-                result = "Í¨¹ØÎ£ÏÕ4"; break;
+                result = "é€šå…³å±é™©4"; break;
             case 5:
-                result = "Í¨¹ØÎ£ÏÕ5"; break;
+                result = "é€šå…³å±é™©5"; break;
         }
 
         return result;
     }
-    //Êó±êÒÆ³ı
+    //ï¿½ï¿½ï¿½ï¿½Æ³ï¿½
     public void OnPointerExit(PointerEventData eventData)
     {
         _backImage.color = new Color(32 / 255f, 32 / 255f, 32 / 255f);

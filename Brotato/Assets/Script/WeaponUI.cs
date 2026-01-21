@@ -42,9 +42,9 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         WeaponSelectPanel.Instance._canvasGroup.blocksRaycasts = false;
 
         //celon武器面板
-        GameObject go1 = Instantiate(WeaponSelectPanel.Instance._weaponDetails,DifficultySelectPanel.Instance._difficultyContent);
+        GameObject go1 = Instantiate(WeaponSelectPanel.Instance._weaponDetails, DifficultySelectPanel.Instance._difficultyContent);
         go1.transform.SetSiblingIndex(0);
-        GameObject go2 = Instantiate(RoleSelectPanel.Instance._roleDetails,DifficultySelectPanel.Instance._difficultyContent);
+        GameObject go2 = Instantiate(RoleSelectPanel.Instance._roleDetails, DifficultySelectPanel.Instance._difficultyContent);
         go2.transform.SetSiblingIndex(0);
 
         //打开难度选择
@@ -57,6 +57,10 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         _backImage.color = new Color(207 / 255f, 207 / 255f, 207 / 255f);
+
+        if (WeaponSelectPanel.Instance._WeaponDetallscanvasGroup.alpha != 1)
+            WeaponSelectPanel.Instance._WeaponDetallscanvasGroup.alpha = 1;//显示大屏
+
         //设置上方面板
         ShowUI(_weaponData);
     }
