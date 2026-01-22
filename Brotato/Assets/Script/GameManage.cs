@@ -16,4 +16,13 @@ public class GameManage : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
+    public object RandomOne<T>(List<T> list)
+    {
+        if(list == null || list.Count == 0)
+        {
+            return null;
+        }
+        int index = Random.Range(0, list.Count); 
+        return list[index];
+    }
 }

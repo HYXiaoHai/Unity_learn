@@ -31,7 +31,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
         );
     }
-    void ButtonClick(WeaponData w)
+   public void ButtonClick(WeaponData w)
     {
         //保存武器信息
         GameManage.Instance.currentWeapon.Add(w);
@@ -65,7 +65,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         ShowUI(_weaponData);
     }
 
-    void ShowUI(WeaponData w)
+    public void ShowUI(WeaponData w)
     {
         //修改武器名称
         WeaponSelectPanel.Instance._weaponName.text = w.name;
