@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7473369769193526118
+--- !u!1 &5456002939738371392
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,39 +8,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6995057737045346783}
-  - component: {fileID: 2124239978110178987}
-  - component: {fileID: 1902280123927003731}
-  - component: {fileID: 6696899012540786092}
+  - component: {fileID: 8379263344223235644}
+  - component: {fileID: 3480810519511882821}
+  - component: {fileID: 971519752552335052}
+  - component: {fileID: 986585230196796173}
+  - component: {fileID: 8929746685559562971}
   m_Layer: 0
-  m_Name: Money
-  m_TagString: Money
+  m_Name: Circle_bullet
+  m_TagString: Enemy_bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6995057737045346783
+--- !u!4 &8379263344223235644
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7473369769193526118}
+  m_GameObject: {fileID: 5456002939738371392}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.58, y: -1.99, z: 0.23544426}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1.81, y: -0.79, z: 0}
+  m_LocalScale: {x: 0.20548683, y: 0.20548683, z: 0.20548683}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &2124239978110178987
+--- !u!212 &3480810519511882821
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7473369769193526118}
+  m_GameObject: {fileID: 5456002939738371392}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -72,27 +73,43 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1877291577
-  m_SortingLayer: 5
+  m_SortingLayerID: 55664499
+  m_SortingLayer: 6
   m_SortingOrder: 0
-  m_Sprite: {fileID: 2480277500300789144, guid: d825e7c9cd7057b44a7411bbf8302abb, type: 3}
+  m_Sprite: {fileID: 6720658371315023414, guid: c182db11539b2d64f8b7162cfa08b509, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.41, y: 0.45}
+  m_Size: {x: 2.86, y: 2.88}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!58 &1902280123927003731
+--- !u!114 &971519752552335052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5456002939738371392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 396d6bc17d21a8249a11d1d1dc226465, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 1
+  rotationSpeed: 30
+  radius: 0
+  currentAngle: 0
+--- !u!58 &986585230196796173
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7473369769193526118}
+  m_GameObject: {fileID: 5456002939738371392}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -120,19 +137,31 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.225
---- !u!114 &6696899012540786092
-MonoBehaviour:
+  m_Radius: 1.44
+--- !u!50 &8929746685559562971
+Rigidbody2D:
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7473369769193526118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b374cba1c2480044bfefcbc04a009c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 8
-  attractDelay: 0.5
-  maxAttractDistance: 1
+  m_GameObject: {fileID: 5456002939738371392}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

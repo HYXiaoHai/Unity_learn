@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy3 : EnemyBase
+public class Weapon2 : WeaponShort
 {
-
+   
 }

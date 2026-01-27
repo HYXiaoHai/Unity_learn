@@ -20,6 +20,16 @@ public class Player : MonoBehaviour
     public float exp = 0f;//经验值
     public float maxExp = 12f;//升级所需的经验值
 
+    [Header("初始化武器")]
+    public List<WeaponData> weaponDatas = new List<WeaponData>();
+    public List<Transform> w;
+    public Transform w1;
+    public Transform w2;
+    public Transform w3;
+    public Transform w4;
+    public Transform w5;
+    public Transform w6;
+    public GameObject weapon_prefab;
     public Animator anim;
 
     private void Awake()
@@ -35,17 +45,54 @@ public class Player : MonoBehaviour
         playerVisual = GameObject.Find("PlayerVisual").GetComponent<Transform>();
         turn = GameObject.Find("Turn").GetComponent<Transform>();
         anim = playerVisual.GetComponent<Animator>();
+        weaponDatas = GameManage.Instance.currentWeapon;
         //_roleData = GameManage.Instance.currentRole;
+
+        w1 = GameObject.Find("w1").GetComponent<Transform>();
+        w2 = GameObject.Find("w2").GetComponent<Transform>();
+        w3 = GameObject.Find("w3").GetComponent<Transform>();
+        w4 = GameObject.Find("w4").GetComponent<Transform>();
+        w5 = GameObject.Find("w5").GetComponent<Transform>();
+        w6 = GameObject.Find("w6").GetComponent<Transform>();
     }
     //设置角色
     private void Start()
     {
-        playerVisual.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(_roleData.avatar);
+        playerVisual.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Image/人物/全能");
+        w.Add(w1);
+        w.Add(w2);
+        w.Add(w3);
+        w.Add(w4);
+        w.Add(w5);
+        w.Add(w6);
+        InitWeapon();
+        //playerVisual.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(_roleData.avatar);
+    }
+
+    void InitWeapon()
+    {
+        if(weaponDatas.Count>6)//最多6把武器
+        {
+            UnityEngine.Debug.LogWarning("武器系统异常");
+        }
+
+       for(int i =0;i<weaponDatas.Count; i++)
+        {
+            if(weaponDatas[i] == null)
+            {
+                break;
+            }
+            string s = "Prefabs/" + weaponDatas[i].name;
+            UnityEngine.Debug.Log(s);
+            weapon_prefab = Resources.Load<GameObject>(s);
+            WeaponBaase wp = Instantiate(weapon_prefab, w[i]).GetComponent<WeaponBaase>();
+            wp.data = weaponDatas[i];
+        }
     }
 
     void Update()
     {
-        if(isDead)
+        if(isDead&&!LevelController.Instance.isOver)
         { return; }
         Move();
     }

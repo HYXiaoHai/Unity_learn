@@ -10,22 +10,17 @@ public class WeaponBaase : MonoBehaviour
     public bool isCooling = false;//是否正在冷却
     public bool canAiming = true;
     public float AttackTimer = 0;//攻击计时器
-    public float moveSpeed;//近战移动速度
-
     public Transform enemy;// 要攻击的敌人
     public float originz;
-    
-    public void Awake()
+
+    public AudioSource audioSource;
+
+    public virtual void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
         originz = transform.eulerAngles.z;
     }
-
-    public void Start()
-    {
-        
-    }
-
-    public void Update()
+    public  void Update()
     {
         if(Player.instance.isDead)
             { return; }
@@ -67,7 +62,7 @@ public class WeaponBaase : MonoBehaviour
 
             Vector2 direction = enemyPos - (Vector2)transform.position;
             float angleDegrees = Mathf.Atan2(direction.y,direction.x)*Mathf.Rad2Deg;//弧度转角度
-            Debug.Log(angleDegrees);
+            //Debug.Log(angleDegrees);
             transform.eulerAngles = new Vector3(transform.eulerAngles.x,transform.eulerAngles.y,angleDegrees+originz);
         }
         else
@@ -78,58 +73,10 @@ public class WeaponBaase : MonoBehaviour
         }
     }
 
-    public void Fire()
-    {
-        if (isCooling)
-        {
-            return;
-        }
-        //近战武器
-        GetComponent<PolygonCollider2D>().enabled = true;
-
-        //发动攻击
-        canAiming = false;
-        StartCoroutine(GoPosition());
-        
-        isCooling = true;
-    }
-
-    IEnumerator GoPosition()
+    public virtual void Fire()
     {
 
-        var enemyPos = enemy.position + new Vector3(0,enemy.GetComponent<SpriteRenderer>().size.y/2,0);//获得中心
-
-        //到达目标
-        while(Vector2.Distance(transform.position,enemyPos)>0.1)
-        {
-            Vector3 direction = (enemyPos - transform.position).normalized;
-
-            Vector3 moveAmount = direction * moveSpeed * Time.deltaTime;
-
-            transform.position += moveAmount;
-
-            yield return null;
-        }
-
-        GetComponent<PolygonCollider2D>().enabled = false;
-
-        StartCoroutine(ReturnPosition());
     }
 
-    IEnumerator ReturnPosition()
-    {
-        while((Vector3.zero - transform.localPosition).magnitude >0.1)
-        {
-            Vector3 direction = (Vector3.zero - transform.localPosition).normalized;
-
-            transform.localPosition += direction * moveSpeed * Time.deltaTime;
-            
-            yield return null;
-        }
-
-        //可以瞄准
-        canAiming = true;
-        
-    }
 }
 

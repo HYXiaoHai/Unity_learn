@@ -10,11 +10,11 @@ public class LevelData
     public int waveTimer;//当前关卡的时间
     public List<WaveData> enemys;//生成敌人信息
 }
-
+[Serializable]
 public class WaveData
 {
     public string enemyName;
     public int timeAxis;
     public int count;
-    public int elite;
+    public int elite = 0;
 }

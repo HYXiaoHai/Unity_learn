@@ -7,6 +7,8 @@ TagManager:
   - Enemy
   - Money
   - Weapon
+  - Enemy_bullet
+  - Player_bullet
   layers:
   - Default
   - TransparentFX
