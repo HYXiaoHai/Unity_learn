@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -30,9 +31,11 @@ public class LevelController : MonoBehaviour
     public LevelData currentElite;//当前精英波次
 
     public EnemyData currentenemyData;//当前生成的敌人
+    public EnemyData currentEliteEnemyData;//当前生成的敌人
 
     public Dictionary<string,GameObject> enemyPrefabDic = new Dictionary<string, GameObject>();
 
+    public int expUpCount = 0;//次波升级的次数;
     public bool isOver = false;//一局游戏是否结束
     private void Awake()
     {
@@ -60,7 +63,6 @@ public class LevelController : MonoBehaviour
 
         redfork_prefab = Resources.Load<GameObject>("Prefabs/RedFork");
         _map = GameObject.Find("Map").GetComponent<Transform>();
-        Debug.Log(GameManage.Instance);
         InityLevelData(GameManage.Instance.currentWave);
         levelDatas = JsonConvert.DeserializeObject<List<LevelData>>(LevelTextAsset.text);
 
@@ -103,6 +105,12 @@ public class LevelController : MonoBehaviour
             {
                 waveTimer = 0;
                 isOver = true;
+                if(GameManage.Instance.currentWave == 5)//最后一局
+                {
+                    WinGame();
+                    return;
+                }
+                //不是最后一局
                 StartCoroutine(GoodGame());
             }
         }
@@ -111,8 +119,8 @@ public class LevelController : MonoBehaviour
     void Start()
     {
         //当前关卡的信息。
-        currentOrdinary = levelDatas[1];
-        currentElite = levelDatas[0];
+        currentOrdinary = levelDatas[1];//普通敌人
+        currentElite = levelDatas[0];//静音怪
         waveTimer = currentOrdinary.waveTimer;
 
         GenerateEnemy();//生成敌人
@@ -145,9 +153,10 @@ public class LevelController : MonoBehaviour
     {
         foreach (EnemyData enemy in GameManage.Instance.enemyDatas)
         {
-            if(enemy.name == name)
+            if (enemy.name == name)
             {
-                return enemy;
+                // 返回一个克隆体，而不是原始引用
+                return enemy.Clone();
             }
         }
         return null;
@@ -166,8 +175,8 @@ public class LevelController : MonoBehaviour
             if (waveTimer > 0 && !Player.instance.isDead)
             {
                 EnemyBase enemy = Instantiate(enemyPrefabDic[waveData.enemyName], spawnPoint, Quaternion.identity).GetComponent<EnemyBase>();
-                currentenemyData = MakecurrenEnemy(waveData.enemyName);
-                enemy.InitEnemy(currentenemyData);
+                currentEliteEnemyData = MakecurrenEnemy(waveData.enemyName);
+                enemy.InitEnemy(currentEliteEnemyData);
                 enemy_list.Add(enemy);
             }
         }
@@ -213,21 +222,25 @@ public class LevelController : MonoBehaviour
             if (enemy_list[i] != null)
                 enemy_list[i].Dead();
         }
-        yield return new WaitForSeconds(1);
-      
+        yield return new WaitForSeconds(2);//等待吸取金币
+        _successPanel.GetComponent<CanvasGroup>().alpha = 0;
+        _successPanel.GetComponent<CanvasGroup>().interactable = false;
+        _successPanel.GetComponent<CanvasGroup>().blocksRaycasts = false;
         //如果升级，打开升级面板
-
-        yield return null;
-        //前往商店scene。
-        GameManage.Instance.currentWave += 1;
-        if (GameManage.Instance.currentWave == 6)
+        if (expUpCount > 0)
         {
-            StartCoroutine(GoMenu());
+            UpgradePanel.instance._upgradelPanel.alpha = 1;
+            UpgradePanel.instance._upgradelPanel.interactable = true;
+            UpgradePanel.instance._upgradelPanel.blocksRaycasts = true;
+            UpgradePanel.instance.RenewUpgradel();
+            UpgradePanel.instance.Renewattribute();
+            UpgradePanel.instance.RenewMoney();
         }
-        else
+        else if (expUpCount == 0)
         {
             GoShop();
         }
+            yield return null;
     }
     public void WinGame()
     {

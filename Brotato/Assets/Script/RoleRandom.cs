@@ -10,8 +10,12 @@ public class RoleRandom : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public Image _backImage;
     public Button _button;
     public List<RoleUI>unlockedRoles = new List<RoleUI>();
+    private AudioSource audioSource;
+    private AudioClip audioClip;
     private void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+        audioClip = Resources.Load<AudioClip>("Music/菜单音效");
         _backImage = GetComponent<Image>();
         _button = GetComponent<Button>();
     }
@@ -19,6 +23,7 @@ public class RoleRandom : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerEnter(PointerEventData eventData)
     {
         _backImage.color = new Color(207 / 255f, 207 / 255f, 207 / 255f);
+        audioSource.PlayOneShot(audioClip);
         RoleSelectPanel.Instance._contentCanvasGroup.alpha = 0;
 
     }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Unity.VisualScripting;
 using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,13 +14,13 @@ public class Player : MonoBehaviour
     public Transform playerVisual;//玩家实体
     public Transform turn;//玩家转向
 
-    public float hp = 15f;
-    public float maxHp = 15f;//当前最大生命值
+    public float hp = 0f;
+    public float maxHp = 0f;//当前最大生命值
     public bool isDead = false;
-    public int money = 30;//当前金币
+    //public int money = 30;//当前金币
     public float exp = 0f;//经验值
     public float maxExp = 12f;//升级所需的经验值
-
+    public int currentLevel = 0;
     [Header("初始化武器")]
     public List<WeaponData> weaponDatas = new List<WeaponData>();
     public List<Transform> w;
@@ -30,8 +31,14 @@ public class Player : MonoBehaviour
     public Transform w5;
     public Transform w6;
     public GameObject weapon_prefab;
-    public Animator anim;
+    public Animator anim;//角色动画
 
+    public GameObject _expUP;//升级提示ui
+    public Animator expAni;//升级提示动画 
+    public Transform _epxUp;//升级提示的
+    public GameObject expUPimage_prafbs;
+    public Stack<GameObject>expUPimagePrafbs = new Stack<GameObject>();
+    public AttributeData attribute;//属性
     private void Awake()
     {
         if (instance == null)
@@ -46,7 +53,11 @@ public class Player : MonoBehaviour
         turn = GameObject.Find("Turn").GetComponent<Transform>();
         anim = playerVisual.GetComponent<Animator>();
         weaponDatas = GameManage.Instance.currentWeapon;
-        //_roleData = GameManage.Instance.currentRole;
+        _roleData = GameManage.Instance.currentRole;
+
+        _epxUp = GameObject.Find("EXPUP").GetComponent<Transform>();
+        _expUP = GameObject.Find("升级提示");
+        expUPimage_prafbs = Resources.Load<GameObject>("Prefabs/ExpUPImage");
 
         w1 = GameObject.Find("w1").GetComponent<Transform>();
         w2 = GameObject.Find("w2").GetComponent<Transform>();
@@ -58,7 +69,7 @@ public class Player : MonoBehaviour
     //设置角色
     private void Start()
     {
-        playerVisual.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Image/人物/全能");
+        //playerVisual.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Image/人物/全能");
         w.Add(w1);
         w.Add(w2);
         w.Add(w3);
@@ -66,9 +77,31 @@ public class Player : MonoBehaviour
         w.Add(w5);
         w.Add(w6);
         InitWeapon();
-        //playerVisual.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(_roleData.avatar);
-    }
+        Initattribute();//设置属性
+        playerVisual.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(_roleData.avatar);
 
+        expAni = _expUP.GetComponent<Animator>();
+        _expUP.SetActive(false);
+
+       
+    }
+    //设置属性
+    public void Initattribute()
+    {
+        UnityEngine.Debug.Log(hp);
+        UnityEngine.Debug.Log(maxExp);
+        attribute = GameManage.Instance.currentAttribute;
+        speed = 5*(float)(1+attribute.speedPercent*0.01);
+        maxHp = attribute.maxHealth;
+        hp = maxHp;
+        UnityEngine.Debug.Log(hp);
+        UnityEngine.Debug.Log(maxExp);
+        UnityEngine.Debug.Log("--------------------------------");
+        UnityEngine.Debug.Log(attribute.maxHealth);
+        UnityEngine.Debug.Log(GameManage.Instance.currentAttribute.maxHealth);
+        //money = GameManage.Instance.currentMoney;
+        currentLevel = attribute.currentLevel;
+    }
     void InitWeapon()
     {
         if(weaponDatas.Count>6)//最多6把武器
@@ -96,7 +129,6 @@ public class Player : MonoBehaviour
         { return; }
         Move();
     }
-
     //wasd移动
 
     public void Move()
@@ -132,6 +164,35 @@ public class Player : MonoBehaviour
         }
     }
 
+
+    //升级
+    public void ExpUP(float Exp)
+    {
+        float upExp = Exp *(1+GameManage.Instance.expMuti);//计算实际增加值
+        exp += upExp;
+        if(exp>=maxExp)
+        {
+            //满足升级
+            LevelController.Instance.expUpCount++;
+            currentLevel++;
+            GameManage.Instance.currentAttribute.currentLevel++;
+            float f = exp % maxExp;//exp归零并加上多余的经验
+            exp = f;
+            expUPimagePrafbs.Push(Instantiate(expUPimage_prafbs, _epxUp));//生成升级ui
+            //播放动画
+            StartCoroutine(StartexpUp());
+        }
+        GamePanel.instance.RenewExp();
+    }
+    //升级动画
+    IEnumerator StartexpUp()
+    {
+        _expUP.SetActive(true);
+        yield return null;
+        expAni.Play("expUP");//开始播放
+        yield return new WaitForSeconds(1);
+        _expUP.SetActive(false); 
+    }
     //受伤
     public void Injured(float attack)
     {
@@ -164,14 +225,14 @@ public class Player : MonoBehaviour
         //游戏失败函数
         LevelController.Instance.BadGame();
     }
-
+    //获取金币
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.CompareTag("Money"))
         {
             Destroy(collision.gameObject);
-
-            money ++;
+            GameManage.Instance.currentMoney++;
+            //money ++;
             GamePanel.instance.RenewMoney(); 
         }
     }

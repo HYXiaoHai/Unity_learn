@@ -12,6 +12,8 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public Image _backImage;//背景
     public Image _avatar;//头像
     public Button _button;//按钮
+    private AudioSource audioSource;
+    private AudioClip audioClip;
 
     private void Awake()
     {
@@ -19,6 +21,9 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         //_avatar = GetComponentInChildren<Image>();
         _avatar = transform.GetChild(0).GetComponent<Image>();
         _button = GetComponent<Button>();
+
+        audioSource = GetComponent<AudioSource>();
+        audioClip = Resources.Load<AudioClip>("Music/菜单音效");
     }
 
     public void SetData(WeaponData weaponData)
@@ -57,7 +62,7 @@ public class WeaponUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         _backImage.color = new Color(207 / 255f, 207 / 255f, 207 / 255f);
-
+        audioSource.PlayOneShot(audioClip);
         if (WeaponSelectPanel.Instance._WeaponDetallscanvasGroup.alpha != 1)
             WeaponSelectPanel.Instance._WeaponDetallscanvasGroup.alpha = 1;//显示大屏
 

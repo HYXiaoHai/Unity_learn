@@ -12,14 +12,18 @@ public class CommonButton : MonoBehaviour,IPointerEnterHandler,IPointerExitHandl
     private Image image;
     private TextMeshProUGUI text;
     private Button button;
-
+    private AudioSource audioSource;
+    private AudioClip audioClip;
     private void Awake()
     {
            image = GetComponent<Image>();
+           audioSource = GetComponent<AudioSource>();
            text = GetComponentInChildren<TextMeshProUGUI>();
+        audioClip = Resources.Load < AudioClip > ("Music/≤Àµ•“Ù–ß"); 
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
+        audioSource.PlayOneShot(audioClip);
         image.color = new Color(255, 255, 255);
         text.color = Color.black;
     }

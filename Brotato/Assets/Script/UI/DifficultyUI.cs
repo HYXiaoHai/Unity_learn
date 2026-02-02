@@ -17,12 +17,16 @@ public class DifficultyUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public Image _avatar;//头像
     public Button _button;//按钮
 
-
+    private AudioSource audioSource;
+    private AudioClip audioClip;
     private void Awake()
     {
         _backImage = GetComponent<Image>();
         _avatar = transform.GetChild(0).GetComponent<Image>();
         _button = GetComponent<Button>();
+
+        audioSource = GetComponent<AudioSource>();
+        audioClip = Resources.Load<AudioClip>("Music/菜单音效");
     }
     public void SetData(DifficutyData data)
     {
@@ -36,6 +40,8 @@ public class DifficultyUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         {
             //记录难度
             GameManage.Instance.currentDifficulty = data;
+            //初始化开始游戏
+            GameManage.Instance.NewGame();
             //跳转场景
             SceneManager.LoadScene(2);
         }
@@ -44,7 +50,7 @@ public class DifficultyUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnPointerEnter(PointerEventData eventData)
     {
         _backImage.color = new Color(207 / 255f, 207 / 255f, 207 / 255f);
-
+        audioSource.PlayOneShot(audioClip);
 
         if (DifficultySelectPanel.Instance._difficultyDetallscanvasGroup.alpha != 1)
             DifficultySelectPanel.Instance._difficultyDetallscanvasGroup.alpha = 1;//显示大屏

@@ -9,16 +9,21 @@ public class WeaponRandom : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public Image _backImage;
     public Button _button;
     public List<WeaponUI> weaponUIs = new List<WeaponUI>();
+    private AudioSource audioSource;
+    private AudioClip audioClip;
 
     private void Awake()
     {
         _backImage = GetComponent<Image>();
         _button = GetComponent<Button>();
+        audioSource = GetComponent<AudioSource>();
+        audioClip = Resources.Load<AudioClip>("Music/≤Àµ•“Ù–ß");
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         _backImage.color = new Color(207 / 255f, 207 / 255f, 207 / 255f);
+        audioSource.PlayOneShot(audioClip);
         WeaponSelectPanel.Instance._WeaponDetallscanvasGroup.alpha = 0;
     }
 

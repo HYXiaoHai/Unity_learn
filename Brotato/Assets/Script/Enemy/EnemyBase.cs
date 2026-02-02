@@ -88,7 +88,9 @@ public class EnemyBase : MonoBehaviour
     public void InitEnemy(EnemyData enemyData)
     {
         _enemyData = enemyData;
-
+        Debug.Log("enemy_hp:"+enemyData.hp);
+        Debug.Log("enemy_hp:"+_enemyData.hp);
+        //避免一上来就放技能
         skillTimer = _enemyData.skillTime;
         isSkillCooling = true;
     }
@@ -216,8 +218,8 @@ public class EnemyBase : MonoBehaviour
     {
         AudioSource.PlayClipAtPoint(deathSound, transform.position);
         //增加玩家经验值
-        Player.instance.exp += _enemyData.provideExp;
-        GamePanel.instance.RenewExp();
+        Player.instance.ExpUP(_enemyData.provideExp);
+
 
         //掉落金币
         Instantiate(money_prefab, transform.position, Quaternion.identity);

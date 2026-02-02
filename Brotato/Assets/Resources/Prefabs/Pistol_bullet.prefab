@@ -185,6 +185,6 @@ MonoBehaviour:
   direction: {x: 0, y: 0, z: 0}
   _enemy: {fileID: 0}
   currentDirect: {x: 0, y: 0, z: 0}
-  damage: 1
+  damage: 4
   _map: {fileID: 0}
   originz: 0

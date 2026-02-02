@@ -15,14 +15,14 @@ public class GamePanel : MonoBehaviour
     public TMP_Text _hpCount;//生命 10/15
     public TMP_Text _countDown;//倒计时 15
     public TMP_Text _waveCount;//波次15
-    
+
+
     private void Awake()
     {
         instance = this;
 
         _hpSlider = GameObject.Find("HpSlider").GetComponent<Slider>();
         _expSlider = GameObject.Find("ExpSlider").GetComponent<Slider>();
-
         _moneyCount = GameObject.Find("MoneyCount").GetComponent<TMP_Text>();
         _expCount = GameObject.Find("ExpCount").GetComponent<TMP_Text>();
         _hpCount = GameObject.Find("HpCount").GetComponent<TMP_Text>();
@@ -53,13 +53,14 @@ public class GamePanel : MonoBehaviour
     //更新经验条
     public void RenewExp()
     {
-        _expSlider.value = Player.instance.exp % Player.instance.maxExp / Player.instance.maxExp;
-        _expCount.text = "LV." + Player.instance.exp/ Player.instance.maxExp;
+        _expSlider.value = Player.instance.exp / Player.instance.maxExp;
+        _expCount.text = "LV." + GameManage.Instance.currentAttribute.currentLevel;
     }
     //更新金币
     public void RenewMoney()
     {
-        _moneyCount.text = Player.instance.money.ToString();
+        //_moneyCount.text = Player.instance.money.ToString();
+        _moneyCount.text = GameManage.Instance.currentMoney.ToString();
     }
     //更新波次
     public void RenewWaveCount()

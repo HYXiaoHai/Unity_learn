@@ -13,13 +13,17 @@ public class RoleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public Image _backImage;//����
     public Image _avatar;//ͷ��
     public Button _button;//��ť
-
+    private AudioSource audioSource;
+    private AudioClip audioClip;
 
     private void Awake()
     {
         _backImage = GetComponent<Image>();
         _avatar = transform.GetChild(0).GetComponent<Image>();
         _button = GetComponent<Button>();
+
+        audioSource = GetComponent<AudioSource>();
+        audioClip = Resources.Load<AudioClip>("Music/菜单音效");
     }
     public void SetData(RoleData roleData)
     {
@@ -65,8 +69,8 @@ public class RoleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         _backImage.color = new Color(207 / 255f, 207 / 255f, 207 / 255f);
-
-        if(RoleSelectPanel.Instance._contentCanvasGroup.alpha != 1)
+        audioSource.PlayOneShot(audioClip);
+        if (RoleSelectPanel.Instance._contentCanvasGroup.alpha != 1)
         RoleSelectPanel.Instance._contentCanvasGroup.alpha = 1;//��ʾ����
 
         RenewUI(_roleData);
