@@ -4,12 +4,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.U2D;
+using Unity.VisualScripting;
 
 public class PropsDetailsUI : MonoBehaviour
 {
     public Image image;//头像
     public TMP_Text nameTxt;//名字
     public TMP_Text descriptionTxt;//道具描述
+    private int currentId; // 当前商品的ID
+    private bool currentIsWeapon; // 当前是否是武器
+    private int instanceId; // 每个商品实例的唯一标识
 
     [Header("购买按钮相关")]
     public Button buy;//购买按钮
@@ -21,14 +25,27 @@ public class PropsDetailsUI : MonoBehaviour
     public Image lockButtonImage; // 锁定按钮的背景Image（不是lock_BG）
     public bool isLock;//是否被锁定。
 
-    public PropData data;
-
+    public PropData propdata;
+    public WeaponData weapondata;
     private void Start()
     {
-        // 计算并显示折扣价格
-        float discountPrice = data.price * (1 + GameManage.Instance.shopDiscount);
-        int finalPrice = Mathf.FloorToInt(discountPrice);
-        needCount.text = finalPrice.ToString();
+        // 生成唯一实例ID
+        instanceId = System.Guid.NewGuid().GetHashCode();
+
+        if (!currentIsWeapon)//不是武器
+        {
+            // 计算并显示折扣价格
+            float discountPrice = propdata.price * (1 + GameManage.Instance.shopDiscount);
+            int finalPrice = Mathf.FloorToInt(discountPrice);
+            needCount.text = finalPrice.ToString();
+        }
+        else
+        {
+            // 计算并显示折扣价格
+            float discountPrice = weapondata.price * (1 + GameManage.Instance.shopDiscount);
+            int finalPrice = Mathf.FloorToInt(discountPrice);
+            needCount.text = finalPrice.ToString();
+        }
 
         // 配置购买按钮的颜色过渡
         ColorBlock buyColors = buy.colors;
@@ -45,8 +62,12 @@ public class PropsDetailsUI : MonoBehaviour
         lockthis.colors = lockColors;
 
         buy.onClick.AddListener(() =>
-            StartCoroutine(UseAttaick())
-        );
+            {
+            if (!currentIsWeapon)//道具购买
+                StartCoroutine(UseAttaick());
+            else//武器购买
+                StartCoroutine(Buyweapon());
+            });
 
         lockthis.onClick.AddListener(() =>
         {
@@ -71,26 +92,33 @@ public class PropsDetailsUI : MonoBehaviour
             return;
         }
 
-        // 添加到锁定列表
-        GameManage.Instance.lockedPropIds.Add(data.id);
+        // 允许重复锁定，直接添加
+        ShopLock newLock = new ShopLock { isweapon = currentIsWeapon, id = currentId };
+        GameManage.Instance.lockedPropIds.Add(newLock);
+
         isLock = true;
         lockButtonImage.color = Color.red;
-        Debug.Log($"已锁定道具: {data.name}");
+        Debug.Log($"已锁定: {(currentIsWeapon ? "武器" : "道具")} ID:{currentId} (实例:{instanceId})");
     }
 
     void UnlockThisProp()
     {
-        // 从锁定列表中移除（只移除第一个匹配项）
-        if (GameManage.Instance.lockedPropIds.Contains(data.id))
+        // 由于允许重复锁定，我们需要移除一个匹配的锁定
+        // 遍历锁定列表，找到第一个匹配的并移除
+        for (int i = 0; i < GameManage.Instance.lockedPropIds.Count; i++)
         {
-            int indexToRemove = GameManage.Instance.lockedPropIds.IndexOf(data.id);
-            GameManage.Instance.lockedPropIds.RemoveAt(indexToRemove);
-
-            isLock = false;
-            lockButtonImage.color = Color.black;
-            Debug.Log($"已解锁道具: {data.name}");
+            var lockItem = GameManage.Instance.lockedPropIds[i];
+            if (lockItem.isweapon == currentIsWeapon && lockItem.id == currentId)
+            {
+                GameManage.Instance.lockedPropIds.RemoveAt(i);
+                isLock = false;
+                lockButtonImage.color = Color.black;
+                Debug.Log($"已解锁: {(currentIsWeapon ? "武器" : "道具")} ID:{currentId} (实例:{instanceId})");
+                return;
+            }
         }
     }
+
     IEnumerator ShowNotEnoughMoneyEffect()
     {
         if (buyButtonImage != null)
@@ -106,13 +134,24 @@ public class PropsDetailsUI : MonoBehaviour
         }
     }
     //初始化
-    public void Init(PropData propData)
+    public void Initprop(PropData propData)
     {
-        data = propData;
-
-        image.sprite = Resources.Load<SpriteAtlas>("Image/其他/Props").GetSprite(data.name);
-        nameTxt.text = data.name;
-        descriptionTxt.text = data.describe;
+        propdata = propData;
+        currentIsWeapon = false;
+        currentId = propData.id;
+        image.sprite = Resources.Load<SpriteAtlas>("Image/其他/Props").GetSprite(propdata.name);
+            nameTxt.text = propdata.name;
+            descriptionTxt.text = propdata.describe;
+    }
+    //初始化武器
+    public void Initweapon(WeaponData weaponData)
+    {
+            weapondata = weaponData;
+        currentIsWeapon = true;
+        currentId = weaponData.id;
+        image.sprite = Resources.Load<Sprite>(weaponData.avatar);
+            nameTxt.text = weapondata.name;
+            descriptionTxt.text = weapondata.describe;
     }
     // 设置锁定状态（由 PropsSelectPanel 调用）
     public void SetLocked(bool locked)
@@ -120,10 +159,70 @@ public class PropsDetailsUI : MonoBehaviour
         isLock = locked;
         lockButtonImage.color = locked ? Color.red : Color.black;
     }
-    //应用属性
+    //应用属性（武器购买逻辑）
+    IEnumerator Buyweapon()
+    {
+        // 计算价钱
+        float discountPrice = weapondata.price * (1 + GameManage.Instance.shopDiscount);
+        int finalPrice = Mathf.FloorToInt(discountPrice);
+
+        if (finalPrice > GameManage.Instance.currentMoney)
+        {
+            yield return StartCoroutine(ShowNotEnoughMoneyEffect());
+            yield break;
+        }
+
+        bool isBagFull = GameManage.Instance.currentWeapon.Count >= 6;
+
+        if (isBagFull)
+        {
+            // 背包已满，尝试自动合成
+            if (GameManage.Instance.CanAutoMergeWeapon(weapondata.id, weapondata.grade))
+            {
+                // 执行自动合成
+                if (GameManage.Instance.TryAutoMergeWeapon(weapondata.id, weapondata.grade, weapondata))
+                {
+                    // 合成成功
+                    Debug.Log($"自动合成成功！");
+                }
+                else
+                {
+                    Debug.LogWarning("自动合成失败");
+                    yield break;
+                }
+            }
+            else
+            {
+                yield break;
+            }
+        }
+        else
+        {
+            // 背包未满，直接添加
+            GameManage.Instance.currentWeapon.Add(weapondata);
+        }
+
+        // 如果是锁定的道具，先解锁
+        if (isLock)
+        {
+            GameManage.Instance.TryRemoveLock(true, weapondata.id);
+        }
+
+        // 扣款
+        GameManage.Instance.currentMoney -= finalPrice;
+
+        // 更新金币显示
+        PropsSelectPanel.instance.RenewMoney();
+        PropsSelectPanel.instance.RenewWeaponUI();//更新面板
+
+        yield return null;
+        Destroy(gameObject);
+    }
+
+    //应用属性（道具购买逻辑）
     IEnumerator UseAttaick()
     {
-        float discountPrice = data.price * (1 + GameManage.Instance.shopDiscount);
+        float discountPrice = propdata.price * (1 + GameManage.Instance.shopDiscount);
         int finalPrice = Mathf.FloorToInt(discountPrice);
         if (finalPrice > GameManage.Instance.currentMoney)
         {
@@ -135,14 +234,10 @@ public class PropsDetailsUI : MonoBehaviour
         if (isLock)
         {
             // 从锁定列表中移除
-            if (GameManage.Instance.lockedPropIds.Contains(data.id))
-            {
-                int indexToRemove = GameManage.Instance.lockedPropIds.IndexOf(data.id);
-                GameManage.Instance.lockedPropIds.RemoveAt(indexToRemove);
-            }
+            GameManage.Instance.TryRemoveLock(false, propdata.id);
         }
         //购买
-        GameManage.Instance.currentProp.Add(data);//加入已选择数组
+        GameManage.Instance.currentProp.Add(propdata);//加入已选择数组
         GameManage.Instance.currentMoney -= finalPrice;
 
         ApplyAttributeBonuses();
@@ -150,6 +245,7 @@ public class PropsDetailsUI : MonoBehaviour
         // 更新UI
         PropsSelectPanel.instance.Renewattribute();//更新面板
         PropsSelectPanel.instance.RenewMoney();//更新面板
+        PropsSelectPanel.instance.RenewPropsUI();//更新面板
 
         yield return null;
 
@@ -159,23 +255,21 @@ public class PropsDetailsUI : MonoBehaviour
     // 应用属性加成
     void ApplyAttributeBonuses()
     {
-
-
-        GameManage.Instance.currentAttribute.maxHealth += data.maxHP;
-        GameManage.Instance.currentAttribute.healthRegeneration += data.revive;
-        GameManage.Instance.currentAttribute.rangedDamage += data.long_damage * GameManage.Instance.currentAttribute.rangedDamage;
-        GameManage.Instance.currentAttribute.meleeDamage += data.short_damage * GameManage.Instance.currentAttribute.meleeDamage;
-        GameManage.Instance.currentAttribute.range += data.short_range;
-        GameManage.Instance.currentAttribute.range += data.long_range;
-        GameManage.Instance.currentAttribute.attackSpeedPercent += data.short_attackSpeed * GameManage.Instance.currentAttribute.attackSpeedPercent;
-        GameManage.Instance.currentAttribute.attackSpeedPercent += data.long_attackSpeed * GameManage.Instance.currentAttribute.attackSpeedPercent;
-        GameManage.Instance.currentAttribute.speedPercent += data.speed;
-        GameManage.Instance.currentAttribute.harvest += data.harvest;
-        GameManage.Instance.currentAttribute.dodgePercent += data.speedPer;
-        GameManage.Instance.currentAttribute.range += data.pickRange;
-        GameManage.Instance.currentAttribute.criticalRate += data.critical_strikes_probability;
-        GameManage.Instance.slot += data.slot;
-        GameManage.Instance.shopDiscount += data.shopDiscount;
-        GameManage.Instance.expMuti += data.expMuti;
+        GameManage.Instance.currentAttribute.maxHealth += propdata.maxHP;
+        GameManage.Instance.currentAttribute.healthRegeneration += propdata.revive;
+        GameManage.Instance.currentAttribute.rangedDamage += propdata.long_damage * GameManage.Instance.currentAttribute.rangedDamage;
+        GameManage.Instance.currentAttribute.meleeDamage += propdata.short_damage * GameManage.Instance.currentAttribute.meleeDamage;
+        GameManage.Instance.currentAttribute.range += propdata.short_range;
+        GameManage.Instance.currentAttribute.range += propdata.long_range;
+        GameManage.Instance.currentAttribute.attackSpeedPercent += propdata.short_attackSpeed * GameManage.Instance.currentAttribute.attackSpeedPercent;
+        GameManage.Instance.currentAttribute.attackSpeedPercent += propdata.long_attackSpeed * GameManage.Instance.currentAttribute.attackSpeedPercent;
+        GameManage.Instance.currentAttribute.speedPercent += propdata.speed;
+        GameManage.Instance.currentAttribute.harvest += propdata.harvest;
+        GameManage.Instance.currentAttribute.dodgePercent += propdata.speedPer;
+        GameManage.Instance.currentAttribute.range += propdata.pickRange;
+        GameManage.Instance.currentAttribute.criticalRate += propdata.critical_strikes_probability;
+        GameManage.Instance.slot += propdata.slot;
+        GameManage.Instance.shopDiscount += propdata.shopDiscount;
+        GameManage.Instance.expMuti += propdata.expMuti;
     }
 }

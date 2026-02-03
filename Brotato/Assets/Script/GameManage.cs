@@ -2,12 +2,38 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using UnityEngine;
 
+//锁定道具
+public struct ShopLock
+{
+    public bool isweapon; // true：武器 false：道具
+    public int id; // id
 
-//现在这个机制有点不对，
-//1.锁定一个道具后，当再次出现该道具，会被自动判定已锁定
-//2.他只能锁定不同样的道具，当锁定同一个道具的时候，他就不管用了（猜测是因为没有保存到数组里面）
+    // 实现相等比较
+    public override bool Equals(object obj)
+    {
+        if (!(obj is ShopLock)) return false;
+        ShopLock other = (ShopLock)obj;
+        return isweapon == other.isweapon && id == other.id;
+    }
+
+    public override int GetHashCode()
+    {
+        return (isweapon ? 1 : 0) * 1000 + id;
+    }
+
+    public static bool operator ==(ShopLock a, ShopLock b)
+    {
+        return a.isweapon == b.isweapon && a.id == b.id;
+    }
+
+    public static bool operator !=(ShopLock a, ShopLock b)
+    {
+        return !(a == b);
+    }
+}
 public class GameManage : MonoBehaviour
 {
     public static GameManage Instance;
@@ -17,13 +43,14 @@ public class GameManage : MonoBehaviour
     public int slot;//插槽
     public float shopDiscount;//商店折扣
     public float expMuti;//经验增长值
-                                         
+
     [Header("武器")]
     public List<WeaponData> currentWeapon = new List<WeaponData>();//记录当前所有武器
     [Header("道具")]
-    public List<PropData> currentProp = new List<PropData>();//记录当前所有的道具
+    public List<PropData> currentProp = new List<PropData>();//已购买的道具
     public int currentMoney = 30;//当前的金币数
-    public List<int> lockedPropIds = new List<int>(); //存储锁定的道具ID列表
+    //public List<int> lockedPropIds = new List<int>(); //存储锁定的道具ID列表
+    public List<ShopLock> lockedPropIds = new List<ShopLock>(); //存储锁定的道具ID列表
     public const int MAX_LOCKS = 4; //最大锁定数量
     [Header("关卡信息")]
     public DifficutyData currentDifficulty;//当前难度
@@ -31,7 +58,7 @@ public class GameManage : MonoBehaviour
     [Header("敌人信息")]
     public List<EnemyData> enemyDatas = new List<EnemyData>();//
     public TextAsset enemyTextAsset;
-    
+
     private void Awake()
     {
         // 完整的单例模式实现
@@ -76,10 +103,7 @@ public class GameManage : MonoBehaviour
     {
         currentWave++;
     }
-    public void Start()
-    {
 
-    }
     //角色属性
     private void InitAttribute()
     {
@@ -125,12 +149,171 @@ public class GameManage : MonoBehaviour
     }
 
     /////////////////////////锁定道具相关方法///////////////////////////////////
-    // 只保留清空方法（新游戏时用）
+
+    // 锁定相关方法
+    public bool TryAddLock(bool isWeapon, int id)
+    {
+        if (lockedPropIds.Count >= MAX_LOCKS)
+            return false;
+
+        ShopLock newLock = new ShopLock { isweapon = isWeapon, id = id };
+
+        lockedPropIds.Add(newLock);
+        return true;
+    }
+    public bool TryRemoveLock(bool isWeapon, int id)
+    {
+        ShopLock lockToRemove = new ShopLock { isweapon = isWeapon, id = id };
+        return lockedPropIds.Remove(lockToRemove);
+    }
+
+    public bool IsLocked(bool isWeapon, int id)
+    {
+        ShopLock checkLock = new ShopLock { isweapon = isWeapon, id = id };
+        return lockedPropIds.Contains(checkLock);
+    }
+
+    // 获取武器锁定ID数组
+    public int[] ReturnWeaponID()
+    {
+        List<int> weaponIds = new List<int>();
+        foreach (var lockItem in lockedPropIds)
+        {
+            if (lockItem.isweapon)
+            {
+                weaponIds.Add(lockItem.id);
+            }
+        }
+        return weaponIds.ToArray();
+    }
+
+    // 获取道具锁定ID数组
+    public int[] ReturnPropID()
+    {
+        List<int> propIds = new List<int>();
+        foreach (var lockItem in lockedPropIds)
+        {
+            if (!lockItem.isweapon)
+            {
+                propIds.Add(lockItem.id);
+            }
+        }
+        return propIds.ToArray();
+    }
+
+    // 清空所有锁定
     public void ClearAllLocks()
     {
         lockedPropIds.Clear();
     }
     //////////////////////////////////////////////////////////////////////
+    /////////////////////////////武器合成/////////////////////////////////////
+    // 检查是否可以合成指定武器（手动合成检查）
+    public bool CanMergeWeapon(int weaponId, int grade)
+    {
+        int count = 0;
+        foreach (var weapon in currentWeapon)
+        {
+            if (weapon.id == weaponId && weapon.grade == grade)
+            {
+                count++;
+                if (count >= 2) return true;
+            }
+        }
+        return false;
+    }
+
+    // 检查是否可以自动合成（购买时检查）
+    public bool CanAutoMergeWeapon(int weaponId, int grade)
+    {
+        foreach (var weapon in currentWeapon)
+        {
+            if (weapon.id == weaponId && weapon.grade == grade)
+                return true;
+        }
+        return false;
+    }
+
+    // 手动合成武器（从背包中合成）
+    public bool TryMergeWeapon(int weaponId, int grade)
+    {
+        if (!CanMergeWeapon(weaponId, grade))
+            return false;
+
+        // 找到两个要合成的武器
+        List<WeaponData> weaponsToRemove = new List<WeaponData>();
+        foreach (var weapon in currentWeapon)
+        {
+            if (weapon.id == weaponId && weapon.grade == grade && weaponsToRemove.Count < 2)
+            {
+                weaponsToRemove.Add(weapon);
+            }
+        }
+
+        if (weaponsToRemove.Count < 2) return false;
+
+        // 获取第一个武器作为升级基础
+        WeaponData baseWeapon = weaponsToRemove[0];
+
+        // 移除两个武器
+        foreach (var weapon in weaponsToRemove)
+        {
+            currentWeapon.Remove(weapon);
+        }
+
+        // 创建升级后的武器
+        WeaponData upgradedWeapon = CreateUpgradedWeapon(baseWeapon);
+
+        // 添加到背包
+        currentWeapon.Add(upgradedWeapon);
+
+        return true;
+    }
+
+    // 自动合成武器（购买时合成）
+    public bool TryAutoMergeWeapon(int weaponId, int grade, WeaponData purchasedWeapon)
+    {
+        if (!CanAutoMergeWeapon(weaponId, grade))
+            return false;
+
+        // 找到背包中要移除的武器
+        WeaponData weaponToRemove = null;
+        foreach (var weapon in currentWeapon)
+        {
+            if (weapon.id == weaponId && weapon.grade == grade)
+            {
+                weaponToRemove = weapon;
+                break;
+            }
+        }
+
+        if (weaponToRemove == null) return false;
+
+        // 移除背包中的武器
+        currentWeapon.Remove(weaponToRemove);
+
+        // 创建升级后的武器（基于购买的武器）
+        WeaponData upgradedWeapon = CreateUpgradedWeapon(purchasedWeapon);
+
+        // 添加到背包
+        currentWeapon.Add(upgradedWeapon);
+
+        return true;
+    }
+
+    // 创建升级后的武器（核心方法）
+    private WeaponData CreateUpgradedWeapon(WeaponData baseWeapon)
+    {
+        // 直接克隆并修改
+        WeaponData upgraded = baseWeapon.Clone();
+
+        // 修改属性
+        upgraded.grade += 1;  // 等级+1
+        upgraded.damage *= 1.5f;  // 伤害增加50%
+
+        return upgraded;
+    }
+    /////////////////////////////////////////////////////////////////////////
     public object RandomOne<T>(List<T> list)
     {
         if (list == null || list.Count == 0)

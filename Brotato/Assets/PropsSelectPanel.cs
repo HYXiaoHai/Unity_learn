@@ -6,11 +6,18 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
+// 辅助类：表示商店中的一个商品
+public class ShopItem
+{
+    public bool isWeapon; // 是否是武器
+    public int id; // 商品ID
+    public bool isLocked; // 是否被锁定
+}
 public class PropsSelectPanel : MonoBehaviour
 {
-    public  static PropsSelectPanel instance; 
+    public  static PropsSelectPanel instance;
 
+    [Header("商店面板")]
     public int haveMoneycount;//总共有的金币数目
     public TMP_Text _haveMoney;
     public TMP_Text _title;//标题 “商店(第2波)”
@@ -19,14 +26,22 @@ public class PropsSelectPanel : MonoBehaviour
     public Button _refresh;//刷新
 
     public List<PropData> propDatas = new List<PropData>();//道具data信息
-    public TextAsset PropsTextAsset;//json
-    public GameObject prop_fabs;
+    public TextAsset PropsTextAsset;//道具json
+    public List<WeaponData> weponDatas = new List<WeaponData>();//道具data信息
+    public TextAsset weaponsTextAsset;//武器json
+    public GameObject prop_fabs;//商品细节面板预制体（武器与道具公用）
 
-    public List<GameObject> currentProps = new List<GameObject>();//当前展示的道具
-    public List<PropsDetailsUI> slecetProps = new List<PropsDetailsUI>();//以选择的道具
+    public List<GameObject> currentProps = new List<GameObject>();//当前展示的商品
+    //public List<PropsDetailsUI> slecetProps = new List<PropsDetailsUI>();//以选择的道具
 
-    public WeaponUI weapon;
+    [Header("展示面板")]
+    public ShopWeaponUI weapon;
+    public GameObject weaponUi_prafbs;//ui list结构体
     public Transform _weaponList;
+    public GameObject propUi_prafbs;//ui list结构体
+    public Transform _propList;
+    public List<GameObject> pro_fbs = new List<GameObject>();
+    public List<GameObject> wea_fbs = new List<GameObject>();
     public Transform _propsContent;
 
     [Header("属性界面")]
@@ -59,14 +74,23 @@ public class PropsSelectPanel : MonoBehaviour
         _nextWave = GameObject.Find("NextWave").GetComponent<Button>();
         _nextWaveText = GameObject.Find("NextWaveText").GetComponent<TMP_Text>();
         _refresh = GameObject.Find("Refresh").GetComponent<Button>();
+        
         //json
-        PropsTextAsset = Resources.Load<TextAsset>("Data/prop");//读取
+        PropsTextAsset = Resources.Load<TextAsset>("Data/prop");//读取道具
         propDatas = JsonConvert.DeserializeObject<List<PropData>>(PropsTextAsset.text);
+
+        weaponsTextAsset = Resources.Load<TextAsset>("Data/weapon");//读取weapon
+        weponDatas = JsonConvert.DeserializeObject<List<WeaponData>>(weaponsTextAsset.text);
+
         prop_fabs = Resources.Load<GameObject>("Prefabs/PropsDetail");
+        
         //
         _propsContent = GameObject.Find("PropsContent").GetComponent<Transform>();
         _weaponList = GameObject.Find("WeaponList").GetComponent<Transform>();
+        _propList = GameObject.Find("PropList").GetComponent<Transform>();
 
+        weaponUi_prafbs = Resources.Load<GameObject>("Prefabs/ShopWeaponUI");
+        propUi_prafbs = Resources.Load<GameObject>("Prefabs/ShopPropUI");
         //初始化属性面板
         currentLevelText = GameObject.Find("CurrentLevel1").GetComponentInChildren<TMP_Text>();
         maxHealthText = GameObject.Find("MaxHP").GetComponentInChildren<TMP_Text>();
@@ -93,6 +117,8 @@ public class PropsSelectPanel : MonoBehaviour
 
         RenewProp();
         RenewMoney();
+        RenewPropsUI();
+        RenewWeaponUI();
         _refresh.onClick.AddListener(() =>
           Refresh()
         );
@@ -118,44 +144,89 @@ public class PropsSelectPanel : MonoBehaviour
     {
         _haveMoney.text = GameManage.Instance.currentMoney.ToString();
     }
-    //刷新面板
+    //刷新购买面板
     public void RenewProp()
     {
         ClearCurrentProps();
-        // 先生成4个随机索引（允许重复）
-        int[] randomIndices = new int[4];
-        for (int i = 0; i < 4; i++)
+
+        // 创建商品列表（最多4个）
+        List<ShopItem> shopItems = new List<ShopItem>();
+
+        // 先添加锁定的商品
+        foreach (var lockItem in GameManage.Instance.lockedPropIds)
         {
-            randomIndices[i] = Random.Range(0, propDatas.Count);
-        }
-        // 创建一个临时数组存储最终要显示的道具
-        PropData[] finalProps = new PropData[4];
-        // 先复制随机道具到数组
-        for (int i = 0; i < 4; i++)
-        {
-            finalProps[i] = propDatas[randomIndices[i]];
-        }
-        // 用锁定的道具覆盖对应位置
-        // 按照锁定列表中的顺序，覆盖前N个位置（N为锁定道具数量）
-        for (int i = 0; i < GameManage.Instance.lockedPropIds.Count && i < 4; i++)
-        {
-            int lockedId = GameManage.Instance.lockedPropIds[i];
-            // 找到锁定的道具数据
-            PropData lockedProp = propDatas.Find(p => p.id == lockedId);
-            if (lockedProp != null)
+            if (shopItems.Count >= 4) break;
+
+            ShopItem item = new ShopItem
             {
-                finalProps[i] = lockedProp;
-            }
+                isWeapon = lockItem.isweapon,
+                id = lockItem.id,
+                isLocked = true
+            };
+            shopItems.Add(item);
         }
-        // 实例化道具面板
-        for (int i = 0; i < 4; i++)
+
+        // 计算还需要生成多少个商品
+        int needCount = 4 - shopItems.Count;
+
+        // 随机生成剩余的商品
+        for (int i = 0; i < needCount; i++)
+        {
+            // 随机决定是武器还是道具（各50%概率）
+            bool isWeapon = Random.Range(0, 2) == 0;
+            int randomId;
+
+            if (isWeapon)
+            {
+                // 从武器数据中随机选择一个
+                int randomIndex = Random.Range(0, weponDatas.Count);
+                randomId = weponDatas[randomIndex].id;
+            }
+            else
+            {
+                // 从道具数据中随机选择一个
+                int randomIndex = Random.Range(0, propDatas.Count);
+                randomId = propDatas[randomIndex].id;
+            }
+            ShopItem item = new ShopItem
+            {
+                isWeapon = isWeapon,
+                id = randomId,
+                isLocked = false
+            };
+            shopItems.Add(item);
+        }
+
+        // 实例化商品面板
+        foreach (var item in shopItems)
         {
             PropsDetailsUI p = Instantiate(prop_fabs, _propsContent).GetComponent<PropsDetailsUI>();
-            p.Init(finalProps[i]);
-            if (i < GameManage.Instance.lockedPropIds.Count)
+
+            if (item.isWeapon)
+            {
+                // 查找武器数据
+                WeaponData weaponData = weponDatas.Find(w => w.id == item.id);
+                if (weaponData != null)
+                {   
+                    p.Initweapon(weaponData);
+                }
+            }
+            else
+            {
+                // 查找道具数据
+                PropData propData = propDatas.Find(pd => pd.id == item.id);
+                if (propData != null)
+                {
+                    p.Initprop(propData);
+                }
+            }
+
+            // 设置锁定状态
+            if (item.isLocked)
             {
                 p.SetLocked(true);
             }
+
             currentProps.Add(p.gameObject);
         }
     }
@@ -201,7 +272,42 @@ public class PropsSelectPanel : MonoBehaviour
         luckText.text = _attributeData.luck.ToString();
         harvestText.text = _attributeData.harvest.ToString();
     }
-
+    public void RenewWeaponUI()
+    {
+        ClearnWeaponUI();
+        foreach (WeaponData item in GameManage.Instance.currentWeapon)
+        {
+            ShopWeaponUI w = Instantiate(weaponUi_prafbs, _weaponList).GetComponent<ShopWeaponUI>();
+            w.SetData(item);
+            wea_fbs.Add(w.gameObject);
+        }
+    }
+    public void RenewPropsUI()
+    {
+        ClearnPropUI();
+        foreach (PropData item in GameManage.Instance.currentProp)
+        {
+            ShopPropUI s = Instantiate(propUi_prafbs,_propList ).GetComponent<ShopPropUI>();
+            s.SetData(item);
+            pro_fbs.Add(s.gameObject);
+        }
+    }
+    void ClearnWeaponUI()
+    {
+        foreach (var item in wea_fbs)
+        {
+            Destroy(item);
+        }
+        wea_fbs.Clear();
+    }
+    void ClearnPropUI()
+    {
+        foreach (var item in pro_fbs)
+        {
+            Destroy(item);
+        }
+        pro_fbs.Clear();
+    }
     //下一关
     void Nextwave()
     {
