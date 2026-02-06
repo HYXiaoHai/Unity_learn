@@ -252,7 +252,7 @@ public class LevelController : MonoBehaviour
     public void WinGame()
     {
         _successPanel.GetComponent<CanvasGroup>().alpha = 1;
-
+        GameManage.Instance.currentWeapon.Clear();
         // 保存胜利记录
         if (GameManage.Instance != null)
         {
@@ -269,7 +269,7 @@ public class LevelController : MonoBehaviour
     public void BadGame()
     {
         _failPanel.GetComponent<CanvasGroup>().alpha = 1;
-
+        GameManage.Instance.currentWeapon.Clear();
         // 保存失败记录
         if (GameManage.Instance != null)
         {

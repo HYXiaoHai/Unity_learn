@@ -167,7 +167,6 @@ public class GameManage : MonoBehaviour
     {
         InitAttribute();//≥ı ºªØ Ù–‘°£
         currentProp.Clear();
-        currentWeapon.Clear();
         lockedPropIds.Clear();
         currentWave = 1;
         shopDiscount = 0;
