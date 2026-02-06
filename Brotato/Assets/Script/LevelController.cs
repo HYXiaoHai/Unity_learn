@@ -212,7 +212,7 @@ public class LevelController : MonoBehaviour
 
         return new Vector3(randomx, randomy, randomz);
     }
-    //波次完成
+    // 在每波结束时（GoodGame方法）可以自动保存
     public IEnumerator GoodGame()
     {
         _successPanel.GetComponent<CanvasGroup>().alpha = 1;
@@ -240,35 +240,49 @@ public class LevelController : MonoBehaviour
         {
             GoShop();
         }
-            yield return null;
+
+        // 自动保存游戏进度
+        if (GameManage.Instance != null)
+        {
+            GameManage.Instance.SaveGame();
+        }
+
+        yield return null;
     }
     public void WinGame()
     {
         _successPanel.GetComponent<CanvasGroup>().alpha = 1;
 
-        StartCoroutine(GoMenu());//返回主页面
-
-        //todo 所有敌人消失
-        for (int i =0; i<enemy_list.Count;i++)
+        // 保存胜利记录
+        if (GameManage.Instance != null)
         {
-            if(enemy_list[i] != null)
-            enemy_list[i].Dead();
+            GameManage.Instance.OnGameWin();
         }
-    }
-
-    //游戏失败
-    public void BadGame()
-    {
-        _failPanel.GetComponent<CanvasGroup>().alpha = 1;
-
-        StartCoroutine(GoMenu());
-        //todo 所有敌人消失
         for (int i = 0; i < enemy_list.Count; i++)
         {
             if (enemy_list[i] != null)
                 enemy_list[i].Dead();
         }
+        StartCoroutine(GoMenu());
+    }
+    // 在BadGame方法中：
+    public void BadGame()
+    {
+        _failPanel.GetComponent<CanvasGroup>().alpha = 1;
 
+        // 保存失败记录
+        if (GameManage.Instance != null)
+        {
+            GameManage.Instance.OnGameLose();
+        }
+
+        StartCoroutine(GoMenu());
+
+        for (int i = 0; i < enemy_list.Count; i++)
+        {
+            if (enemy_list[i] != null)
+                enemy_list[i].Dead();
+        }
     }
     void GoShop()
     {

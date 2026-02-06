@@ -146,7 +146,7 @@ public class PropsDetailsUI : MonoBehaviour
     //³õÊ¼»¯ÎäÆ÷
     public void Initweapon(WeaponData weaponData)
     {
-            weapondata = weaponData;
+        weapondata = weaponData;
         currentIsWeapon = true;
         currentId = weaponData.id;
         image.sprite = Resources.Load<Sprite>(weaponData.avatar);

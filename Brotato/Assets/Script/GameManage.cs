@@ -86,12 +86,89 @@ public class GameManage : MonoBehaviour
         {
             UnityEngine.Debug.LogError("无法加载 enemy.json 文件");
         }
-
     }
+    private void Start()
+    {
+        // 检查是否有可继续的游戏
+    }
+    //////////////读档相关///////////////
+    // 检查并加载存档
+    // 恢复游戏（由SaveManager调用，而不是在GameManage中自动调用）
+    public void RestoreGame()
+    {
+        if (SaveManager.Instance != null && SaveManager.Instance.HasContinueGame())
+        {
+            SaveManager.Instance.LoadCurrentGame();
+        }
+    }
+
+    //开始新游戏时调用
+    public void StartNewGame(RoleData role, DifficutyData difficulty)
+    {
+        // 先初始化游戏
+        NewGame();
+        currentRole = role;
+        currentDifficulty = difficulty;
+        SaveManager.Instance.StartNewGame(role, difficulty);
+    }
+
+    // 游戏胜利时调用
+    public void OnGameWin()
+    {
+        if (SaveManager.Instance != null && currentRole != null)
+        {
+            int difficultyId = currentDifficulty != null ? currentDifficulty.id : 0;
+            SaveManager.Instance.GameWon(currentRole.id, currentWave, difficultyId);
+        }
+    }
+
+    // 游戏失败时调用
+    public void OnGameLose()
+    {
+        if (SaveManager.Instance != null && currentRole != null)
+        {
+            int difficultyId = currentDifficulty != null ? currentDifficulty.id : 0;
+            SaveManager.Instance.GameLost(currentRole.id, currentWave, difficultyId);
+        }
+    }
+
+    // 手动保存（可在波次结束时调用）
+    public void SaveGame()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.SaveCurrentGame();
+        }
+    }
+
+    // 检查角色解锁条件（可以在属性变化时调用）
+    public void CheckUnlockConditions()
+    {
+        if (SaveManager.Instance == null) return;
+
+        // 检查公牛角色解锁（最大生命值达到50）
+        if (currentAttribute != null && currentAttribute.maxHealth >= 50)
+        {
+            SaveManager.Instance.CheckMaxHealthUnlock(currentAttribute.maxHealth);
+        }
+    }
+
+    // 在属性更新时调用
+    public void UpdateAttribute(AttributeData newAttribute)
+    {
+        currentAttribute = newAttribute;
+        CheckUnlockConditions();
+    }
+
+    ////////////////////////////////////
+
     //崭新的游戏
     public void NewGame()
     {
         InitAttribute();//初始化属性。
+        currentProp.Clear();
+        currentWeapon.Clear();
+        lockedPropIds.Clear();
         currentWave = 1;
         shopDiscount = 0;
         slot = 4;
@@ -211,6 +288,10 @@ public class GameManage : MonoBehaviour
     // 检查是否可以合成指定武器（手动合成检查）
     public bool CanMergeWeapon(int weaponId, int grade)
     {
+        if(grade == 4)//到达最高等级
+        {
+            return false;
+        }
         int count = 0;
         foreach (var weapon in currentWeapon)
         {
@@ -226,6 +307,10 @@ public class GameManage : MonoBehaviour
     // 检查是否可以自动合成（购买时检查）
     public bool CanAutoMergeWeapon(int weaponId, int grade)
     {
+        if (grade == 4)//到达最高等级
+        {
+            return false;
+        }
         foreach (var weapon in currentWeapon)
         {
             if (weapon.id == weaponId && weapon.grade == grade)
@@ -266,7 +351,6 @@ public class GameManage : MonoBehaviour
 
         // 添加到背包
         currentWeapon.Add(upgradedWeapon);
-
         return true;
     }
 
@@ -297,11 +381,11 @@ public class GameManage : MonoBehaviour
 
         // 添加到背包
         currentWeapon.Add(upgradedWeapon);
-
+        PropsSelectPanel.instance.RenewWeaponUI();
         return true;
     }
 
-    // 创建升级后的武器（核心方法）
+    //创建升级后的武器（核心方法）
     private WeaponData CreateUpgradedWeapon(WeaponData baseWeapon)
     {
         // 直接克隆并修改
@@ -314,6 +398,23 @@ public class GameManage : MonoBehaviour
         return upgraded;
     }
     /////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////卖武器/////////////////////////////////////////
+    //卖武器
+    public void SellWeapon(WeaponData w)
+    {
+        foreach (var item in currentWeapon)
+        {
+            if(item == w)
+            {
+                //找到了
+                currentWeapon.Remove(item);
+                currentMoney += (w.price / 2);
+                return;//确保只卖一个
+            }
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////
+   
     public object RandomOne<T>(List<T> list)
     {
         if (list == null || list.Count == 0)

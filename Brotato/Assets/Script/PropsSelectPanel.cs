@@ -24,6 +24,8 @@ public class PropsSelectPanel : MonoBehaviour
     public Button _nextWave;//下一关
     public TMP_Text _nextWaveText;//波数“出发(第*波)”
     public Button _refresh;//刷新
+    public Button _sell;//卖道具
+
 
     public List<PropData> propDatas = new List<PropData>();//道具data信息
     public TextAsset PropsTextAsset;//道具json
@@ -32,18 +34,28 @@ public class PropsSelectPanel : MonoBehaviour
     public GameObject prop_fabs;//商品细节面板预制体（武器与道具公用）
 
     public List<GameObject> currentProps = new List<GameObject>();//当前展示的商品
-    //public List<PropsDetailsUI> slecetProps = new List<PropsDetailsUI>();//以选择的道具
 
     [Header("展示面板")]
     public ShopWeaponUI weapon;
+
     public GameObject weaponUi_prafbs;//ui list结构体
-    public Transform _weaponList;
     public GameObject propUi_prafbs;//ui list结构体
+    public Transform _weaponList;
     public Transform _propList;
+
     public List<GameObject> pro_fbs = new List<GameObject>();
     public List<GameObject> wea_fbs = new List<GameObject>();
     public Transform _propsContent;
 
+    public Button weaponListButton;//武器展示面板
+    public Button propsListButton;//道具展示面板
+    public Button weaponMergeButton;//武器升级按钮
+
+    public GameObject selectedWeaponUI; // 当前选中的武器UI对象
+    public WeaponData selectedWeaponData; // 当前选中的武器数据
+
+    private bool isWeaponList;
+    private bool isPropList;
     [Header("属性界面")]
     public GameObject _attribute;//属性界面
     public AttributeData _attributeData;//属性
@@ -74,6 +86,7 @@ public class PropsSelectPanel : MonoBehaviour
         _nextWave = GameObject.Find("NextWave").GetComponent<Button>();
         _nextWaveText = GameObject.Find("NextWaveText").GetComponent<TMP_Text>();
         _refresh = GameObject.Find("Refresh").GetComponent<Button>();
+        _sell = GameObject.Find("Sell").GetComponent<Button>();
         
         //json
         PropsTextAsset = Resources.Load<TextAsset>("Data/prop");//读取道具
@@ -91,6 +104,17 @@ public class PropsSelectPanel : MonoBehaviour
 
         weaponUi_prafbs = Resources.Load<GameObject>("Prefabs/ShopWeaponUI");
         propUi_prafbs = Resources.Load<GameObject>("Prefabs/ShopPropUI");
+
+        weaponListButton = GameObject.Find("Wuqi").GetComponent<Button>();
+        propsListButton = GameObject.Find("Daoju").GetComponent<Button>();
+        weaponMergeButton = GameObject.Find("Shengji").GetComponent<Button>();
+
+        // 确保升级按钮初始状态为不可见
+        if (weaponMergeButton != null)
+        {
+            weaponMergeButton.gameObject.SetActive(false);
+        }
+
         //初始化属性面板
         currentLevelText = GameObject.Find("CurrentLevel1").GetComponentInChildren<TMP_Text>();
         maxHealthText = GameObject.Find("MaxHP").GetComponentInChildren<TMP_Text>();
@@ -114,19 +138,67 @@ public class PropsSelectPanel : MonoBehaviour
     {
         _title.text = "商店(第"+GameManage.Instance.currentWave.ToString() + "波)";
         _nextWaveText.text = "出发(第" + (GameManage.Instance.currentWave+1).ToString()+ "波)";
-
+        
+        isWeaponList = true;//默认武器list
+        
         RenewProp();
         RenewMoney();
         RenewPropsUI();
         RenewWeaponUI();
+        Renewattribute();
+
         _refresh.onClick.AddListener(() =>
           Refresh()
         );
         _nextWave.onClick.AddListener(() =>
           Nextwave()
         );
+        weaponListButton.onClick.AddListener(()=>
+            OnweaponListButton()
+        );
+        propsListButton.onClick.AddListener(()=>
+            OnpropsListButton()
+        );
+        weaponMergeButton.onClick.AddListener(()=>
+            OnweaponMergeButton()
+        );
+        _sell.onClick.AddListener(()=>
+            OnSellButton()
+        );
     }
-  
+    //卖道具按钮(只能卖武器)
+    void OnSellButton()
+    {
+        if(isWeaponList&&selectedWeaponUI!=null)
+        {
+            //卖
+            GameManage.Instance.SellWeapon(selectedWeaponData);
+            RenewWeaponUI();
+            RenewMoney();
+        }
+        else
+        {
+            Debug.Log(isWeaponList);
+            Debug.Log(isPropList);
+            Debug.Log(selectedWeaponUI);
+            StartCoroutine(ShowNotEnoughSellEffect());
+        }
+    }
+    //卖失败（禁止卖）
+    IEnumerator ShowNotEnoughSellEffect()
+    {
+        if (_sell.image != null)
+        {
+            Color originalColor = Color.black;
+            for (int i = 0; i < 3; i++)
+            {
+                _sell.image.color = Color.red;
+                yield return new WaitForSeconds(0.1f);
+                _sell.image.color = originalColor;
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+    }
     //随机道具（data信息）
     void Refresh()
     {
@@ -197,7 +269,7 @@ public class PropsSelectPanel : MonoBehaviour
             shopItems.Add(item);
         }
 
-        // 实例化商品面板
+        //实例化商品面板
         foreach (var item in shopItems)
         {
             PropsDetailsUI p = Instantiate(prop_fabs, _propsContent).GetComponent<PropsDetailsUI>();
@@ -245,7 +317,6 @@ public class PropsSelectPanel : MonoBehaviour
     }
 
     //更新属性
-
     public void Renewattribute()
     {
         _attributeData = GameManage.Instance.currentAttribute;
@@ -272,16 +343,35 @@ public class PropsSelectPanel : MonoBehaviour
         luckText.text = _attributeData.luck.ToString();
         harvestText.text = _attributeData.harvest.ToString();
     }
+    //更新武器list ui
     public void RenewWeaponUI()
     {
         ClearnWeaponUI();
+
+        // 先隐藏升级按钮
+        ShowWeaponMergeButton(false);
+
         foreach (WeaponData item in GameManage.Instance.currentWeapon)
         {
             ShopWeaponUI w = Instantiate(weaponUi_prafbs, _weaponList).GetComponent<ShopWeaponUI>();
             w.SetData(item);
             wea_fbs.Add(w.gameObject);
+
+            // 如果这个武器和之前选中的武器数据匹配，设置选中状态
+            if (selectedWeaponData != null &&
+                item.id == selectedWeaponData.id &&
+                item.grade == selectedWeaponData.grade)
+            {
+                // 找到第一个匹配的武器，设置为选中
+                SetSelectedWeapon(w.gameObject, item);
+                break;
+            }
         }
+
+        // 检查是否可以合成并更新按钮状态
+        UpdateWeaponMergeButtonState();
     }
+    //更新道具list ui
     public void RenewPropsUI()
     {
         ClearnPropUI();
@@ -292,14 +382,18 @@ public class PropsSelectPanel : MonoBehaviour
             pro_fbs.Add(s.gameObject);
         }
     }
+    //清理武器list ui
     void ClearnWeaponUI()
     {
+        // 先清空选中状态
+        ClearSelectedWeapon();
         foreach (var item in wea_fbs)
         {
             Destroy(item);
         }
         wea_fbs.Clear();
     }
+    //清理道具list ui
     void ClearnPropUI()
     {
         foreach (var item in pro_fbs)
@@ -308,6 +402,169 @@ public class PropsSelectPanel : MonoBehaviour
         }
         pro_fbs.Clear();
     }
+    void OpenWeaponList()
+    {
+        isWeaponList = true;
+        isPropList = false;
+        CanvasGroup c = _weaponList.GetComponent<CanvasGroup>();
+        c.alpha = 1.0f;
+        c.interactable = true;
+        c.blocksRaycasts = true;
+
+        // 切换到武器列表时，检查是否有选中的武器并更新按钮状态
+        if (selectedWeaponUI != null)
+        {
+            UpdateWeaponMergeButtonState();
+        }
+    }
+    void CloseWeaponList()
+    {
+        isWeaponList = false;
+        CanvasGroup c = _weaponList.GetComponent<CanvasGroup>();
+        c.alpha = 0f;
+        c.interactable = false;
+        c.blocksRaycasts = false;
+    }
+    void OpenPropList()
+    {
+        isWeaponList = false;
+        isPropList = true;
+        CanvasGroup c = _propList.GetComponent<CanvasGroup>();
+        c.alpha = 1.0f;
+        c.interactable = true;
+        c.blocksRaycasts = true;
+
+        // 切换到道具列表时，隐藏升级按钮
+        ShowWeaponMergeButton(false);
+    }
+    void ClosePropList()
+    {
+        isPropList = false;
+        CanvasGroup c = _propList.GetComponent<CanvasGroup>();
+        c.alpha = 0f;
+        c.interactable = false;
+        c.blocksRaycasts = false;
+    }
+    //按下武器列表ui按钮
+    void OnweaponListButton()
+    {
+        ClosePropList();
+        OpenWeaponList();
+    }
+    //按下道具列表ui按钮
+    void OnpropsListButton()
+    {
+        CloseWeaponList();
+        OpenPropList();
+    }
+    // 按下武器升级ui按钮
+    void OnweaponMergeButton()
+    {
+        if (selectedWeaponData != null)
+        {
+            // 尝试合成武器
+            if (GameManage.Instance.TryMergeWeapon(selectedWeaponData.id, selectedWeaponData.grade))
+            {
+                // 刷新武器UI
+                RenewWeaponUI();
+
+                // 隐藏升级按钮
+                ShowWeaponMergeButton(false);
+
+                // 清空选中状态
+                ClearSelectedWeapon();
+            }
+            else
+            {
+                Debug.Log("武器升级失败");
+            }
+        }
+    }
+
+    // 设置选中的武器UI
+    public void SetSelectedWeapon(GameObject weaponUI, WeaponData weaponData)
+    {
+        // 如果点击的是同一个武器UI，不执行任何操作（不取消选中）
+        if (selectedWeaponUI == weaponUI)
+        {
+            return;
+        }
+
+        // 取消之前选中的武器UI的高亮
+        if (selectedWeaponUI != null)
+        {
+            ShopWeaponUI oldWeaponUI = selectedWeaponUI.GetComponent<ShopWeaponUI>();
+            if (oldWeaponUI != null)
+            {
+                oldWeaponUI.SetSelected(false);
+            }
+        }
+
+        // 设置新的选中
+        selectedWeaponUI = weaponUI;
+        selectedWeaponData = weaponData;
+
+        // 设置新选中的武器UI高亮
+        ShopWeaponUI newWeaponUI = weaponUI.GetComponent<ShopWeaponUI>();
+        if (newWeaponUI != null)
+        {
+            newWeaponUI.SetSelected(true);
+        }
+
+        // 更新升级按钮状态
+        UpdateWeaponMergeButtonState();
+    }
+
+    // 清空选中的武器
+    public void ClearSelectedWeapon()
+    {
+        // 取消之前选中的武器UI的高亮
+        if (selectedWeaponUI != null)
+        {
+            ShopWeaponUI oldWeaponUI = selectedWeaponUI.GetComponent<ShopWeaponUI>();
+            if (oldWeaponUI != null)
+            {
+                oldWeaponUI.SetSelected(false);
+            }
+        }
+
+        selectedWeaponUI = null;
+        selectedWeaponData = null;
+    }
+
+    // 更新武器升级按钮状态
+    private void UpdateWeaponMergeButtonState()
+    {
+        if (selectedWeaponData != null)
+        {
+            // 检查是否可以合成
+            if (GameManage.Instance.CanMergeWeapon(selectedWeaponData.id, selectedWeaponData.grade))
+            {
+                // 可以合成，显示升级按钮
+                ShowWeaponMergeButton(true);
+            }
+            else
+            {
+                // 不可以合成，隐藏升级按钮
+                ShowWeaponMergeButton(false);
+            }
+        }
+        else
+        {
+            // 没有选中武器，隐藏升级按钮
+            ShowWeaponMergeButton(false);
+        }
+    }
+
+    // 显示或隐藏升级按钮
+    public void ShowWeaponMergeButton(bool show)
+    {
+        if (weaponMergeButton != null)
+        {
+            weaponMergeButton.gameObject.SetActive(show);
+        }
+    }
+
     //下一关
     void Nextwave()
     {
