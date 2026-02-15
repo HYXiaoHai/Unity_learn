@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;//场景管理的空间
 
@@ -9,7 +10,7 @@ using UnityEngine.SceneManagement;//场景管理的空间
 public class No21_ScenesManage : MonoBehaviour
 {
     AsyncOperation ao;
-    // Start is called before the first frame update
+
     void Start()
     {
 
@@ -24,6 +25,7 @@ public class No21_ScenesManage : MonoBehaviour
 
         //异步加载（进度条，动画）王者，英雄联盟加载界面
         //SceneManager.LoadSceneAsync("Test1");
+        StartCoroutine(LoadNextAsyncScene());
     }
 
     // Update is called once per frame
@@ -40,6 +42,9 @@ public class No21_ScenesManage : MonoBehaviour
         }
 
     }
+    
+
+    //异步加载场景
     IEnumerator LoadNextAsyncScene()
     {
         ao = SceneManager.LoadSceneAsync(1);
@@ -53,6 +58,7 @@ public class No21_ScenesManage : MonoBehaviour
             yield return null;
         }
         Debug.Log("按下任意键继续游戏");
+        KeyCode keyCode;
     }
     IEnumerator LoadScene()
     {
@@ -63,4 +69,6 @@ public class No21_ScenesManage : MonoBehaviour
         //加载场景名字为test1的场景
         SceneManager.LoadScene("Test1");
     }
+
+
 }
