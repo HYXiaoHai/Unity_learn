@@ -6024,7 +6024,7 @@ GameObject:
   - component: {fileID: 727896416}
   - component: {fileID: 727896415}
   m_Layer: 0
-  m_Name: NavMesh Surface
+  m_Name: "\u5BFC\u822A"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
