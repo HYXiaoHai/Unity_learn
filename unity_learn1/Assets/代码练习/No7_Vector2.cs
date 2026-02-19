@@ -22,6 +22,7 @@ public class No7_Vector2 : MonoBehaviour
         //print(Vector2.left);
         //print(Vector2.one);
         //print(Vector2.zero);
+
         ////构造函数
         //Vector2 v2 = new Vector2(2, 2);
         ////成员变量

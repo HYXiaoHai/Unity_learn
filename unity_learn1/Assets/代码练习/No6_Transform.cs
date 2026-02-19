@@ -41,6 +41,28 @@ public class No6_Transform : MonoBehaviour
         //静态方法
         Destroy(grisGo);
         GetComponent<Transform>();
+        #region 屏幕坐标鼠标
+        //Input.mousePosition;
+
+        #endregion
+
+        #region 坐标转换
+
+        //世界坐标转本地坐标
+        transform.InverseTransformDirection(transform.position);
+        transform.InverseTransformPoint(transform.position);
+        transform.InverseTransformVector(transform.position);
+        //本地坐标转世界
+        this.transform.TransformDirection(transform.position);
+        transform.TransformPoint(transform.position);
+        transform.TransformVector(transform.position);
+
+        //世界转屏幕
+        //Camera.main.WorldToScreenPoint;
+        //屏幕转世界
+        //
+
+        #endregion
 
     }
 

@@ -24,6 +24,11 @@ public class No17_Rigibody : MonoBehaviour
         //rb.AddForce(Vector2.right*5,ForceMode2D.Impulse);//瞬时   
 
         rb.velocity = Vector2.right*movespeed;
+
+        if(rb.IsSleeping())//刚体是否在休眠
+        {
+            rb.WakeUp();    
+        }
     }
 
     // Update is called once per frame

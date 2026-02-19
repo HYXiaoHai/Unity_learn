@@ -5,6 +5,7 @@ using UnityEngine;
 public class playerControl : MonoBehaviour
 {
     private Animator animator;
+    public Transform target;
     // Start is called before the first frame update
     void Start()
     {
@@ -37,5 +38,19 @@ public class playerControl : MonoBehaviour
     void Pickup()
     {
         Debug.Log("捡起");
+    }
+
+    //IK事件 逆动力学
+    private void OnAnimatorIK(int layerIndex)
+    {
+        //设置头部
+        animator.SetLookAtWeight(1);
+        animator.SetLookAtPosition(target.position);
+        //设置右手
+        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
+        animator.SetIKRotationWeight(AvatarIKGoal.RightHand,1);//旋转
+
+        animator.SetIKPosition(AvatarIKGoal.RightHand, target.position);//使用右手IK;
+        animator.SetIKRotation(AvatarIKGoal.RightHand,target.rotation);
     }
 }
