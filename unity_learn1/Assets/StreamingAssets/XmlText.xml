@@ -1,0 +1,10 @@
+<Root Root="技能">
+  <Book ID="1">
+    <Name>水浒传</Name>
+    <Author>施耐庵</Author>
+  </Book>
+  <Book ID="2">
+    <Name>西游记</Name>
+    <Author>吴承恩</Author>
+  </Book>
+</Root>
