@@ -16,8 +16,6 @@ public class No0_LifeFun : MonoBehaviour
     {
         Debug.Log("Start");
     }
-
-
     void Update()
     {
         Debug.Log("Update");   

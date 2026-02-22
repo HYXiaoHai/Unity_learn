@@ -10,6 +10,7 @@ public class No3_GameObject : MonoBehaviour
     public GameObject grisGo;
     public
     // Start is called before the first frame update
+    
     void Start()
     {
         //1.创建方式
