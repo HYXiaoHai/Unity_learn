@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: grips
+  m_EditorClassIdentifier: 
+  m_GroupName: grips
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 42b2d250e22061244a6036279470f773
+  m_SerializeEntries:
+  - m_GUID: 629e715212670db4c9108715852ba0be
+    m_Address: "Assets/\u5B66\u4E60\u7D20\u6750/Gris/Idle/1.png"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - HD
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c21e6f74607fa445953f24739446b0d
+    m_Address: "Assets/\u5B66\u4E60\u7D20\u6750/Gris/run/1.png"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - SD
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a862519253f4a874d8455282f2a266d5
+    m_Address: "Assets/\u5B66\u4E60\u7D20\u6750/Gris/Walk/1.png"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - HD
+    - SD
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: b0d74206919eaf145a0b5d838fbf0b59, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: bf47a3431e167b74a91cf2086122451e, type: 2}
+    - {fileID: 11400000, guid: d2a7e12b9c45d804dbe5aa5c4aed5355, type: 2}

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Models
+  m_EditorClassIdentifier: 
+  m_GroupName: Models
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 97616fd9af7763c4eb9b615f7bbe0b25
+  m_SerializeEntries:
+  - m_GUID: 73717959bfab15243a8498be6929865c
+    m_Address: Assets/Resources_moved/Model/Prefabs/GreenCube.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a3737721e74c938439a8373e40c65db9
+    m_Address: Assets/Resources_moved/Model/Prefabs/RedCube.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: b0d74206919eaf145a0b5d838fbf0b59, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 5b355c9f7442d4048b7baeeeda5383ca, type: 2}
+    - {fileID: 11400000, guid: 7a77f74f9cfe0e24e85d307335f15b21, type: 2}
