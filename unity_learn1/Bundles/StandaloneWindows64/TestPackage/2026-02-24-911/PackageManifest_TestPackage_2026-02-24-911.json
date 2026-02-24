@@ -1,0 +1,36 @@
+{
+    "FileVersion": "2025.9.30",
+    "EnableAddressable": true,
+    "SupportExtensionless": false,
+    "LocationToLower": false,
+    "IncludeAssetGUID": false,
+    "ReplaceAssetPathWithAddress": false,
+    "OutputNameStyle": 0,
+    "BuildBundleType": 1,
+    "BuildPipeline": "EditorSimulateBuildPipeline",
+    "PackageName": "TestPackage",
+    "PackageVersion": "2026-02-24-911",
+    "PackageNote": "2026/2/24 15:11:30",
+    "AssetList": [
+        {
+            "Address": "YooGreenCube",
+            "AssetPath": "Assets/Resources_moved/Model/Prefabs/YooGreenCube.prefab",
+            "AssetGUID": "",
+            "AssetTags": [],
+            "BundleID": 0,
+            "DependBundleIDs": []
+        }
+    ],
+    "BundleList": [
+        {
+            "BundleName": "model.bundle",
+            "UnityCRC": 0,
+            "FileHash": "0e44d9264380b23d842c4b73d7d76163",
+            "FileCRC": 0,
+            "FileSize": 3004,
+            "Encrypted": false,
+            "Tags": [],
+            "DependBundleIDs": []
+        }
+    ]
+}
