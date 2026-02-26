@@ -97,3 +97,7 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Added to ignore HybridCLR generated repos
+HybirdTest/HybridCLRData/hybridclr_repo/
+HybirdTest/HybridCLRData/il2cpp_plus_repo/
