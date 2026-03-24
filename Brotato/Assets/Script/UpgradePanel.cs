@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class UpgradePanel : MonoBehaviour
@@ -96,20 +98,35 @@ public class UpgradePanel : MonoBehaviour
         for (int i = 0; i < 7; i++) // 先拿7种做实验
         {
             string path = $"Prefabs/upgrade_{i}";
-            GameObject prefab = Resources.Load<GameObject>(path);
-            if (prefab != null)
-            {
-                allUpgradePrefabs.Add(prefab);
-            }
-            else
-            {
-                Debug.LogWarning($"无法加载预制体: {path}");
-            }
+            StartCoroutine(LoadPre(path));
+            //GameObject prefab = Resources.Load<GameObject>(path);
+            //if (prefab != null)
+            //{
+            //    allUpgradePrefabs.Add(prefab);
+            //}
+            //else
+            //{
+            //    Debug.LogWarning($"无法加载预制体: {path}");
+            //}
         }
 
         if (allUpgradePrefabs.Count == 0)
         {
             Debug.LogError("没有加载到任何升级预制体！");
+        }
+    }
+    IEnumerator LoadPre(string s)
+    {
+        var prefbHandle = Addressables.LoadAssetAsync<GameObject>(s);
+        yield return prefbHandle;
+        GameObject prefab = prefbHandle.Result;
+        if (prefab != null)
+        {
+            allUpgradePrefabs.Add(prefab);
+        }
+        else
+        {
+            Debug.LogWarning($"无法加载预制体: {s}");
         }
     }
 

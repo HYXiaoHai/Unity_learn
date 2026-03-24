@@ -1,6 +1,7 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.SceneManagement;
 
 public class SimpleAudioManager : MonoBehaviour
 {
@@ -40,10 +41,20 @@ public class SimpleAudioManager : MonoBehaviour
             return;
         }
 
-        menuMusic = Resources.Load<AudioClip>("Music/±≥æ∞“Ù¿÷");
-        gameplayMusic = Resources.Load<AudioClip>("Music/±≥æ∞“Ù¿÷");
+        //menuMusic = Resources.Load<AudioClip>("Music/±≥æ∞“Ù¿÷");
+        //gameplayMusic = Resources.Load<AudioClip>("Music/±≥æ∞“Ù¿÷");
+        StartCoroutine(LoadMusic());
     }
+    IEnumerator LoadMusic()
+    {
+        var menuHandle = Addressables.LoadAssetAsync<AudioClip>("Music/±≥æ∞“Ù¿÷");
+        yield return menuHandle;
+        menuMusic = menuHandle.Result;
 
+        var gameplayHandle = Addressables.LoadAssetAsync<AudioClip>("Music/±≥æ∞“Ù¿÷");
+        yield return gameplayHandle;
+        gameplayMusic = gameplayHandle.Result;
+    }
     void OnDestroy()
     {
         // »°œ˚ ¬º˛∂©‘ƒ

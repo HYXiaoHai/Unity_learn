@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 //Ëø¶¨µÀ¾ß
 public struct ShopLock
@@ -76,7 +77,15 @@ public class GameManage : MonoBehaviour
             return;
         }
 
-        enemyTextAsset = Resources.Load<TextAsset>("Data/enemy");
+        //enemyTextAsset = Resources.Load<TextAsset>("Data/enemy");
+        StartCoroutine(LoadEnemyData());
+        
+    }
+    IEnumerator LoadEnemyData()
+    {
+        var handle = Addressables.LoadAssetAsync<TextAsset>("Data/enemy");
+        yield return handle;
+        enemyTextAsset = handle.Result;
         if (enemyTextAsset != null)
         {
             enemyDatas = JsonConvert.DeserializeObject<List<EnemyData>>(enemyTextAsset.text);

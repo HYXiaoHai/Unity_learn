@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 // 辅助类：表示商店中的一个商品
@@ -87,23 +88,25 @@ public class PropsSelectPanel : MonoBehaviour
         _nextWaveText = GameObject.Find("NextWaveText").GetComponent<TMP_Text>();
         _refresh = GameObject.Find("Refresh").GetComponent<Button>();
         _sell = GameObject.Find("Sell").GetComponent<Button>();
-        
+
+        StartCoroutine(Load());
+
         //json
-        PropsTextAsset = Resources.Load<TextAsset>("Data/prop");//读取道具
-        propDatas = JsonConvert.DeserializeObject<List<PropData>>(PropsTextAsset.text);
+        //PropsTextAsset = Resources.Load<TextAsset>("Data/prop");//读取道具
+        //propDatas = JsonConvert.DeserializeObject<List<PropData>>(PropsTextAsset.text);
 
-        weaponsTextAsset = Resources.Load<TextAsset>("Data/weapon");//读取weapon
-        weponDatas = JsonConvert.DeserializeObject<List<WeaponData>>(weaponsTextAsset.text);
+        //weaponsTextAsset = Resources.Load<TextAsset>("Data/weapon");//读取weapon
+        //weponDatas = JsonConvert.DeserializeObject<List<WeaponData>>(weaponsTextAsset.text);
 
-        prop_fabs = Resources.Load<GameObject>("Prefabs/PropsDetail");
+        //prop_fabs = Resources.Load<GameObject>("Prefabs/PropsDetail");
         
         //
         _propsContent = GameObject.Find("PropsContent").GetComponent<Transform>();
         _weaponList = GameObject.Find("WeaponList").GetComponent<Transform>();
         _propList = GameObject.Find("PropList").GetComponent<Transform>();
 
-        weaponUi_prafbs = Resources.Load<GameObject>("Prefabs/ShopWeaponUI");
-        propUi_prafbs = Resources.Load<GameObject>("Prefabs/ShopPropUI");
+        //weaponUi_prafbs = Resources.Load<GameObject>("Prefabs/ShopWeaponUI");
+        //propUi_prafbs = Resources.Load<GameObject>("Prefabs/ShopPropUI");
 
         weaponListButton = GameObject.Find("Wuqi").GetComponent<Button>();
         propsListButton = GameObject.Find("Daoju").GetComponent<Button>();
@@ -133,6 +136,30 @@ public class PropsSelectPanel : MonoBehaviour
         speedPercentText = GameObject.Find("Speed").GetComponentInChildren<TMP_Text>();
         luckText = GameObject.Find("Lucky").GetComponentInChildren<TMP_Text>();
         harvestText = GameObject.Find("Harvest").GetComponentInChildren<TMP_Text>();
+    }
+    IEnumerator Load()
+    {
+        var PropsHandle = Addressables.LoadAssetAsync<TextAsset>("Data/prop");
+        yield return PropsHandle;
+        PropsTextAsset = PropsHandle.Result;
+        propDatas = JsonConvert.DeserializeObject<List<PropData>>(PropsTextAsset.text);
+
+        var weaponsHandle = Addressables.LoadAssetAsync<TextAsset>("Data/weapon");
+        yield return weaponsHandle;
+        weaponsTextAsset = weaponsHandle.Result;
+        weponDatas = JsonConvert.DeserializeObject<List<WeaponData>>(weaponsTextAsset.text);
+
+        var profabHandle = Addressables.LoadAssetAsync<GameObject>("Prefabs/PropsDetail");
+        yield return profabHandle;
+        prop_fabs = profabHandle.Result;
+
+        var weaponUibHandle = Addressables.LoadAssetAsync<GameObject> ("Prefabs/ShopWeaponUI");
+        yield return weaponUibHandle;
+        weaponUi_prafbs = weaponUibHandle.Result;
+
+        var propUiHandle = Addressables.LoadAssetAsync<GameObject>("Prefabs/ShopPropUI");
+        yield return propUiHandle;
+        propUi_prafbs = propUiHandle.Result;
     }
     private void Start()
     {
