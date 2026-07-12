@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour
@@ -56,16 +55,16 @@ public class LevelController : MonoBehaviour
         _failPanel = GameObject.Find("FailPanel");
         _successPanel = GameObject.Find("SuccesPanel");
 
-        //enemy1_prefab = Resources.Load<GameObject>("Prefabs/Enemy1");
-        //enemy2_prefab = Resources.Load<GameObject>("Prefabs/Enemy2");
-        //enemy3_prefab = Resources.Load<GameObject>("Prefabs/Enemy3");
-        //enemy4_prefab = Resources.Load<GameObject>("Prefabs/Enemy4");
-        //enemy5_prefab = Resources.Load<GameObject>("Prefabs/Enemy5");
+        enemy1_prefab = Resources.Load<GameObject>("Prefabs/Enemy1");
+        enemy2_prefab = Resources.Load<GameObject>("Prefabs/Enemy2");
+        enemy3_prefab = Resources.Load<GameObject>("Prefabs/Enemy3");
+        enemy4_prefab = Resources.Load<GameObject>("Prefabs/Enemy4");
+        enemy5_prefab = Resources.Load<GameObject>("Prefabs/Enemy5");
         StartCoroutine(Load());
 
         redfork_prefab = Resources.Load<GameObject>("Prefabs/RedFork");
         _map = GameObject.Find("Map").GetComponent<Transform>();
-        StartCoroutine(InityLevelData(GameManage.Instance.currentWave));
+        InityLevelData(GameManage.Instance.currentWave);
         levelDatas = JsonConvert.DeserializeObject<List<LevelData>>(LevelTextAsset.text);
 
         enemyPrefabDic.Add("enemy1",enemy1_prefab);
@@ -76,60 +75,60 @@ public class LevelController : MonoBehaviour
     }
     IEnumerator Load()
     {
-        var e1Handle = Addressables.LoadAssetAsync<GameObject>("Prefabs/Enemy1");
+        var e1Handle = Resources.Load<GameObject>("Prefabs/Enemy1");
         yield return e1Handle;
-        enemy1_prefab = e1Handle.Result;
+        enemy1_prefab = e1Handle;
        
-        var e2Handle = Addressables.LoadAssetAsync<GameObject>("Prefabs/Enemy1");
+        var e2Handle = Resources.Load<GameObject>("Prefabs/Enemy1");
         yield return e2Handle;
-        enemy2_prefab = e2Handle.Result;
+        enemy2_prefab = e2Handle;
         
-        var e3Handle = Addressables.LoadAssetAsync<GameObject>("Prefabs/Enemy1");
+        var e3Handle = Resources.Load<GameObject>("Prefabs/Enemy1");
         yield return e3Handle;
-        enemy3_prefab = e3Handle.Result;
+        enemy3_prefab = e3Handle;
         
-        var e4Handle = Addressables.LoadAssetAsync<GameObject>("Prefabs/Enemy1");
+        var e4Handle = Resources.Load<GameObject>("Prefabs/Enemy1");
         yield return e4Handle;
-        enemy4_prefab = e4Handle.Result;
+        enemy4_prefab = e4Handle;
         
-        var e5Handle = Addressables.LoadAssetAsync<GameObject>("Prefabs/Enemy1");
+        var e5Handle = Resources.Load<GameObject>("Prefabs/Enemy1");
         yield return e5Handle;
-        enemy5_prefab = e5Handle.Result;
+        enemy5_prefab = e5Handle;
         
     }
-    IEnumerator InityLevelData(int lv)
+    void  InityLevelData(int lv)
     {
         switch (lv)
         {
             case 1:
-                //LevelTextAsset = Resources.Load<TextAsset>("Data/level1");
-                var levelHandle = Addressables.LoadAssetAsync<TextAsset>("Data/level1");
-                yield return levelHandle;
-                LevelTextAsset = levelHandle.Result;
+                LevelTextAsset = Resources.Load<TextAsset>("Data/level1");
+                ////var levelHandle = Addressables.LoadAssetAsync<TextAsset>("Data/level1");
+                //yield return LevelTextAsset;
+                //LevelTextAsset = LevelTextAsset;
                 break;
             case 2:
-                var leve2Handle = Addressables.LoadAssetAsync<TextAsset>("Data/level2");
-                yield return leve2Handle;
-                LevelTextAsset = leve2Handle.Result;
-                //LevelTextAsset = Resources.Load<TextAsset>("Data/level2");
+                //var leve2Handle = Addressables.LoadAssetAsync<TextAsset>("Data/level2");
+                //yield return leve2Handle;
+                //LevelTextAsset = leve2Handle.Result;
+                LevelTextAsset = Resources.Load<TextAsset>("Data/level2");
                 break;
             case 3:
-                var leve3Handle = Addressables.LoadAssetAsync<TextAsset>("Data/level3");
-                yield return leve3Handle;
-                LevelTextAsset = leve3Handle.Result;
-                //LevelTextAsset = Resources.Load<TextAsset>("Data/level3");
+                //var leve3Handle = Addressables.LoadAssetAsync<TextAsset>("Data/level3");
+                //yield return leve3Handle;
+                //LevelTextAsset = leve3Handle.Result;
+                LevelTextAsset = Resources.Load<TextAsset>("Data/level3");
                 break;
             case 4:
-                var leve4Handle = Addressables.LoadAssetAsync<TextAsset>("Data/level4");
-                yield return leve4Handle;
-                LevelTextAsset = leve4Handle.Result;
-                //LevelTextAsset = Resources.Load<TextAsset>("Data/level4");
+                //var leve4Handle = Addressables.LoadAssetAsync<TextAsset>("Data/level4");
+                //yield return leve4Handle;
+                //LevelTextAsset = leve4Handle.Result;
+                LevelTextAsset = Resources.Load<TextAsset>("Data/level4");
                 break;
             case 5:
-                var leve5Handle = Addressables.LoadAssetAsync<TextAsset>("Data/level4");
-                yield return leve5Handle;
-                LevelTextAsset = leve5Handle.Result;
-                //LevelTextAsset = Resources.Load<TextAsset>("Data/level5");
+                //var leve5Handle = Addressables.LoadAssetAsync<TextAsset>("Data/level4");
+                //yield return leve5Handle;
+                //LevelTextAsset = leve5Handle.Result;
+                LevelTextAsset = Resources.Load<TextAsset>("Data/level5");
                 break;
         }
         levelDatas = JsonConvert.DeserializeObject<List<LevelData>>(LevelTextAsset.text);

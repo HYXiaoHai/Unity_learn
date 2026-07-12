@@ -46,6 +46,8 @@ public class RoleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void ButtonClick(RoleData r)
     {
+        if (r.unlock == 0) return;
+
         GameManage.Instance.currentRole = r;
 
         //�رս�ɫѡ�����

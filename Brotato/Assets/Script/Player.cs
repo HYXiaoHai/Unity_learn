@@ -4,7 +4,6 @@ using System.Diagnostics;
 using Unity.VisualScripting;
 //using UnityEditor.UI;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
@@ -58,7 +57,7 @@ public class Player : MonoBehaviour
 
         _epxUp = GameObject.Find("EXPUP").GetComponent<Transform>();
         _expUP = GameObject.Find("升级提示");
-        //expUPimage_prafbs = Resources.Load<GameObject>("Prefabs/ExpUPImage");
+        expUPimage_prafbs = Resources.Load<GameObject>("Prefabs/ExpUPImage");
         StartCoroutine(LoadExp());
         w1 = GameObject.Find("w1").GetComponent<Transform>();
         w2 = GameObject.Find("w2").GetComponent<Transform>();
@@ -69,9 +68,9 @@ public class Player : MonoBehaviour
     }
     IEnumerator LoadExp()
     {
-        var expHandle = Addressables.LoadAssetAsync<GameObject>("Prefabs/ExpUPImage");
+        var expHandle = Resources.Load<GameObject>("Prefabs/ExpUPImage");
         yield return expHandle;
-        expUPimage_prafbs = expHandle.Result;
+        expUPimage_prafbs = expHandle;
     }
 
     //设置角色
@@ -125,7 +124,7 @@ public class Player : MonoBehaviour
             }
             string s = "Prefabs/" + weaponDatas[i].name;
             UnityEngine.Debug.Log(s);
-            //weapon_prefab = Resources.Load<GameObject>(s);
+            weapon_prefab = Resources.Load<GameObject>(s);
             StartCoroutine(LoadWeapon(s));
             WeaponBaase wp = Instantiate(weapon_prefab, w[i]).GetComponent<WeaponBaase>();
             wp.data = weaponDatas[i];
@@ -133,9 +132,9 @@ public class Player : MonoBehaviour
     }
     IEnumerator LoadWeapon(string s)
     {
-        var weaponHandle = Addressables.LoadAssetAsync<GameObject>(s);
+        var weaponHandle = Resources.Load<GameObject>(s);
         yield return weaponHandle;
-        weapon_prefab = weaponHandle.Result;
+        weapon_prefab = weaponHandle;
     }
     void Update()
     {

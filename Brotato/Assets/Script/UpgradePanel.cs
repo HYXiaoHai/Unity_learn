@@ -99,15 +99,15 @@ public class UpgradePanel : MonoBehaviour
         {
             string path = $"Prefabs/upgrade_{i}";
             StartCoroutine(LoadPre(path));
-            //GameObject prefab = Resources.Load<GameObject>(path);
-            //if (prefab != null)
-            //{
-            //    allUpgradePrefabs.Add(prefab);
-            //}
-            //else
-            //{
-            //    Debug.LogWarning($"无法加载预制体: {path}");
-            //}
+            GameObject prefab = Resources.Load<GameObject>(path);
+            if (prefab != null)
+            {
+                allUpgradePrefabs.Add(prefab);
+            }
+            else
+            {
+                Debug.LogWarning($"无法加载预制体: {path}");
+            }
         }
 
         if (allUpgradePrefabs.Count == 0)
