@@ -1,0 +1,34 @@
+{
+    "name": "DotweenController",
+    "maps": [
+        {
+            "name": "Control",
+            "id": "ff0b77a9-5bbb-4668-9140-8f4901ef25bb",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "dec55a54-86b8-47d0-a0da-e3f2f4803250",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7e1372cf-4bcd-45e5-8a21-add93a9cc079",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
