@@ -12,7 +12,7 @@ public class EnemyData
     public float skillTime;//技能时间间隔（-1表示无技能）
     public float range;//攻击范围 （-1为近战贴身）
 
-    // 克隆方法 - 创建新的实例
+    //克隆方法 - 创建新的实例
     public EnemyData Clone()
     {
         return new EnemyData
